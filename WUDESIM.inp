@@ -1,10 +1,10 @@
 [INP_FILE]
 ;EPANET input file name (Example: Net1.inp):
-inp_files\Net2.inp
+Net2.inp
 
 [RPT_FILE]
 ;EPANET report file name (Example: Net1.rpt):
-rpt_files\Net2.rpt
+Net2.rpt
 
 [CORR_FACTS]
 ;Use correction factors for the spatial distribution of flow demands? (Yes/No)
