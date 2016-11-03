@@ -420,7 +420,6 @@ int main()
 	double Rel_Viscosity;
 	string Flow_UNITS;
 	string QUAL_TAG;
-	string QUAL_UNIT;
 
 	for (int i = 0;i < options_data.size();++i) {
 		istringstream iss(options_data[i]);
@@ -428,7 +427,7 @@ int main()
 		if (find("Viscosity", options_data[i])) { iss >> dummy >> Rel_Viscosity; }
 		if (find("Diffusivity", options_data[i])) { iss >> dummy >> Rel_Diffusivity; }
 		if (find("UNITS", options_data[i])) { iss >> dummy >> Flow_UNITS; }
-		if (find("QUALITY", options_data[i])) { iss >> dummy >> QUAL_TAG >> QUAL_UNIT; }
+		if (find("QUALITY", options_data[i])) { iss >> dummy >> QUAL_TAG; }
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -490,7 +489,7 @@ int main()
 	int N_steps = ((Duration_hr - Rep_start_hr) * 60 + (Duration_min - Rep_start_min)) / (Rep_step_hr * 60 + Rep_step_min) + 1;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Read Reactions data from input file
+	// Read Global Reactions data from input file
 
 	vector<string> reactions_data;
 	reactions_data = InputData(index, A1, "[REACTIONS]");
@@ -499,6 +498,7 @@ int main()
 	double Wall_coeff = 0;
 	double Bulk_order = 1;
 	double Wall_order = 1;
+	double Lim_pot = 0;
 
 	for (int i = 0;i < reactions_data.size();++i) {
 		istringstream iss(reactions_data[i]);
@@ -508,11 +508,13 @@ int main()
 		if (find("Global Wall", reactions_data[i])) { iss >> dummy >> dummy >> Wall_coeff; }  // Read Wall Coeff (length/day)
 		if (find("Order Bulk", reactions_data[i])) { iss >> dummy >> dummy >> Bulk_order; }
 		if (find("Order Wall", reactions_data[i])) { iss >> dummy >> dummy >> Wall_order; }
+		if (find("Limiting Potential", reactions_data[i])) { iss >> dummy >> dummy >> Lim_pot; }
 
 	}
 
 	if (find("NONE", QUAL_TAG)) { Bulk_coeff = 0; Wall_coeff = 0; }
-	if (find("AGE", QUAL_TAG)) { Bulk_coeff = 1; Bulk_order = 0; Wall_coeff = 0; }
+	if (find("AGE", QUAL_TAG)) { Bulk_coeff = 1*24*3600; Bulk_order = 0; Wall_coeff = 0; }
+	if (find("TRACE", QUAL_TAG)) { logfile << "WUDESIM does not handle Trace quality simulations" << endl; exit(EXIT_FAILURE); }
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -694,7 +696,7 @@ int main()
 	// Write simulation info data to binary file
 	logfile << "Writing input data for water quality simulation" << endl << endl;
 
-	vector<double> SIMinfo(9);
+	vector<double> SIMinfo(10);
 	SIMinfo[0] = N_steps;								 //Number of steps (hrs);
 	SIMinfo[1] = Rep_step_hr + Rep_step_min / 60.;		 //Report time step (hr)
 	SIMinfo[2] = Qual_step_hr*3600. + Qual_step_min*60.; //Quality time step (sec)
@@ -702,8 +704,9 @@ int main()
 	SIMinfo[4] = Wall_coeff;                             //wall decay coefficient (m/sec) or (1/m2/sec)
 	SIMinfo[5] = Rel_Diffusivity*1.2E-9;                 //Actual Diffusivity (m2/sec)
 	SIMinfo[6] = Rel_Viscosity*1E-6;                     //Actual Kinematic Viscosity (m2/sec)
-	SIMinfo[7] = Bulk_order;
-	SIMinfo[8] = Wall_order;
+	SIMinfo[7] = Bulk_order;							 //Order of bulk reaction
+	SIMinfo[8] = Wall_order;							 //Order of wall reaction
+	SIMinfo[9] = Lim_pot;								 //Limiting concentration potential
 
 	ofs.open("SIMinfo.bin", ios::out | ios::binary | ios::trunc);
 	if (ofs.is_open()) {
