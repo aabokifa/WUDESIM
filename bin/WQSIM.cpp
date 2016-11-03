@@ -39,7 +39,7 @@ int WUDESIM(int branch_no, vector<string>& term_id)
 
 	//Read Simulation Inputs
 
-	vector<double> Inputs(9);
+	vector<double> Inputs(10);
 	ifs.open("SIMinfo.bin", ios::in | ios::binary);
 	if (ifs.is_open()) {
 		ifs.read(reinterpret_cast<char*>(Inputs.data()), 7 * (sizeof(double)));
@@ -58,7 +58,7 @@ int WUDESIM(int branch_no, vector<string>& term_id)
 	double viscosity = Inputs[6];        //water kinematic viscosity(m2 / sec) = 1cSt
 	double n_b = Inputs[7];				 //Bulk reaction order
 	double n_w = Inputs[8];				 //Wall reaction order
-
+	double C_L = Inputs[9];				 //Limiting potential
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -399,16 +399,63 @@ int WUDESIM(int branch_no, vector<string>& term_id)
 						C_adv[i] = (C[i - 1] * (x[i] - E[i]) + C[i] * (E[i] - x[i - 1])) / dx[Hstep];
 
 						//Bulk Reaction step
-						if (n_b == 1) { C_adv[i] *= exp(Kb* dt_q); }          //First order bulk reaction
-						else { C_adv[i] *= (1 + (n_b - 1)*Kb*pow(C_adv[i], n_b - 1)*dt_q); }		  //nth order bulk reaction
+						if (C_L == 0) {
+							if (n_b == 1) { C_adv[i] *= exp(Kb* dt_q); }                           //First order bulk reaction
+							else { C_adv[i] *= (1 + (n_b - 1)*Kb*pow(C_adv[i], n_b - 1)*dt_q); }   //nth order bulk reaction
+						}
+						else if (n_b > 0) { // dC/dt=Kb*(C_L-C)*C^(n_b-1)
+							//Solve via RK4
+							double y1 = C_adv[i];
+							double k1 = Kb*(C_L - y1)*pow(y1, n_b - 1);
+							double y2 = y1 + dt_q*k1 / 2;
+							double k2 = Kb*(C_L - y2)*pow(y2, n_b - 1);
+							double y3 = y1 + dt_q*k2 / 2;
+							double k3 = Kb*(C_L - y3)*pow(y3, n_b - 1);
+							double y4 = y1 + dt_q*k3;
+							double k4 = Kb*(C_L - y4)*pow(y4, n_b - 1);
+							
+							C_adv[i] += (dt_q / 6)*(k1 + 2 * k2 + 2 * k3 + k4);
+						}
+						else if (n_b < 0) { 
+							if (Kb < 0) {      // Michaelis-Menton Decay Kinetics: dC/dt=Kb*C/(C_L-C)
+								double y1 = C_adv[i];
+								double k1 = Kb*y1 / (C_L - y1);
 
+								double y2 = y1 + dt_q*k1 / 2;
+								double k2 = Kb*y2 / (C_L - y2);
+
+								double y3 = y1 + dt_q*k2 / 2;
+								double k3 = Kb*y3 / (C_L - y3);
+
+								double y4 = y1 + dt_q*k3;
+								double k4 = Kb*y4 / (C_L - y4);
+								
+								C_adv[i] += (dt_q / 6)*(k1 + 2 * k2 + 2 * k3 + k4);
+
+							}
+							else if (Kb > 0) { //Michaelis-Menton growth Kinetics dC/dt=Kb*C/(C_L+C)
+								double y1 = C_adv[i];
+								double k1 = Kb*y1 / (C_L + y1);
+
+								double y2 = y1 + dt_q*k1 / 2;
+								double k2 = Kb*y2 / (C_L + y2);
+
+								double y3 = y1 + dt_q*k2 / 2;
+								double k3 = Kb*y3 / (C_L + y3);
+
+								double y4 = y1 + dt_q*k3;
+								double k4 = Kb*y4 / (C_L + y4);
+
+								C_adv[i] += (dt_q / 6)*(k1 + 2 * k2 + 2 * k3 + k4);
+							}
+						}
 						//Wall Reaction 
 						double Rw;
 						if (n_w == 1) {        //First order wall reaction
 							Rw = (4 * Kw*Kf[i] / (dp*(Kw + Kf[i])))*Kw_Corr;
 							C_adv[i] *= exp(Rw* dt_q);
 						}
-						else if (n_w == 0) {		//Zeroth order wall reaction
+						else if (n_w == 0) {   //Zeroth order wall reaction
 							Rw = (4 * Kw / dp) / 1000; // Kw/rh (mg/m3/sec --> mg/L/sec)
 							C_adv[i] += Rw*dt_q;
 						}
