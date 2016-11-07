@@ -1,17 +1,18 @@
 /*
-File:   WQSIM.cpp
-Author: Ahmed Abokifa
-Date:   10/25/2016
-Desc:	This file contains the stochastic demand generation function, which can be called from the water quality simulator. This function takes 
-		the generalized flow rates, as well as the probability distribution parameters specified by the user in "WUDESIM.inp" in order to generate 
-		stochastic flow demands based on Poisson pulse distributions at fine time scales. The stochastic demands have randomly generated intensities 
-		and durations based on lognormal probability distributions. The demands are then aggregated and averaged based on the averaging interval 
-		specified by the user. The function returns a vector of the stochastically generated demands to be used in the water quality simulations. 
+Project:     WUDESIM ver. 1 BETA
+File:        DEMGEN.cpp
+Author:      Ahmed Abokifa
+Date:        10/25/2016
+Description: This file contains the stochastic demand generation function, which can be called from the water quality simulation function. 
+			 This function takes the generalized flow rates, as well as the probability distribution parameters specified by the user in 
+			 "WUDESIM.inp" in order to generate stochastic flow demands based on Poisson pulse distributions at fine time scales. The 
+			 stochastic demands have randomly generated intensities and durations based on lognormal probability distributions. The demands 
+			 are then aggregated and averaged based on the averaging interval specified by the user. The function returns a vector of 
+			 the stochastically generated demands to be used in the water quality simulations. 
 */
 
 
 
-//#include "stdafx.h"
 #include <iostream> 
 #include <fstream>  
 #include <vector>   
@@ -41,9 +42,6 @@ vector<double> DEMGEN(vector<double>& flow_inp, double dt_q, double dt_h_inp, ve
 	double mean_V = exp(u1+u2)/1000;	//Mean pulse volume(m3)
 
 	int N_steps_inp = flow_inp.size();
-
-	if (dt_q >= Avg_int) { cout << "Water Quality step is not smaller than the Averaging Interval" << endl; }
-	if (dt_h_inp*3600 <= Avg_int) { cout << "Hydraulic step is not greater than the Averaging Interval" << endl; }
 
 	// Calculate pulse arrival rate (Lambda)
 	vector<double> L = flow_inp;
