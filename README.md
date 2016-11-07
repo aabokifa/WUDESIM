@@ -8,8 +8,11 @@ To build using CMake and Visual Studio on Windows:
 - Open command prompt and navigate to the project root directory. You can easily do this in Windows by holding down the Shift key while right clicking in the directory folder.
 
 Type in the following commands:
+
 > mkdir build
+
 > cd build
+
 > cmake ..
 
 CMake will identify the installed compilers on your machine, and automatically build the project for you using the latest version of Visual Studio. 
@@ -18,8 +21,10 @@ CMake will identify the installed compilers on your machine, and automatically b
 
 - Alternatively, you can directly generate the executable by typing the following command after building the project with CMake:
 >msbuild /p:Configuration=Release ALL_BUILD.vcxproj
+
 The executable will be generated in the /build/src/Release directory.
 
-To run the executable from the command line:
+- To run the executable from the command line:
 >WUDESIM.exe EPANET.inp EPANET.rpt WUDESIM.inp
-In the /Sample directory you will find three sample files (Net2.inp, Net2.rpt, and WUDESIM.inp)to run the program with.
+
+- In the /Sample directory you will find three sample files (Net2.inp, Net2.rpt, and WUDESIM.inp)to run the program with.
