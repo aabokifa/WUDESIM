@@ -1,12 +1,11 @@
 /*
-File:   functions.cpp
-Author: Ahmed Abokifa
-Date:   10/25/2016
-Desc:	This source file contains multiple small functions that are frequently used during the execution of other source codes.
+Project:     WUDESIM ver. 1 BETA
+File:        Utilities.cpp
+Author:      Ahmed Abokifa
+Date:        10/25/2016
+Description: This source file contains multiple small functions that are frequently utilized during the execution of other source codes.
 */
 
-
-//#include "stdafx.h" 
 #include <iostream> 
 #include <fstream>  
 #include <vector>  
@@ -16,10 +15,13 @@ Desc:	This source file contains multiple small functions that are frequently use
 #include <string>  
 #include <iterator>
 #include <numeric>
-#include "Headers.h"
 #include <stdio.h>
 #include <tchar.h>
 #include <SDKDDKVer.h>
+
+#include "Classes.h"
+#include "WUDESIMmain.h"
+#include "Utilities.h"
 
 using namespace std;
 
@@ -29,10 +31,10 @@ bool compare(string str1, string str2) //Compare String 1 to the begining of Str
 	else return false;
 }
 
-bool find(string str1, string str2) //Find String 1 in String 2
+bool find(string str1, string str2) //Find String 1 in String 2 case insensitive
 {
 	char c1;
-	char c2=*str1.begin(); //c2 is the first character in str1
+	char c2=*str1.begin();   //c2 is the first character in str1
 	char c3;
 	char c4;
 
@@ -70,7 +72,10 @@ vector<string> ImportFile(string FileName)
 		}
 		return Import;
 	}
-	else { logfile << "Error opening " << FileName << endl; exit(EXIT_FAILURE); }
+	else
+	{
+		return{};
+	}
 }
 
 vector<string> InputData(vector<int>& index, vector<string>& A1, string Header)
