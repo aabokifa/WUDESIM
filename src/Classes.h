@@ -90,7 +90,7 @@ public:
 
 class dead_end_branch {
 public:
-	int branch_size = 0;						//Branch size;
+	int branch_size;						//Branch size;
 	vector<string> pipe_id;						//IDs of the pipes in the DE branch
 	vector<double> length;
 	vector<double> diameter;
