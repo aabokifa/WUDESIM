@@ -15,9 +15,7 @@ Description: Class initialization with network defaults.
 #include <string>  
 #include <iterator>
 #include <numeric>
-#include <stdio.h>
-#include <tchar.h>
-#include <SDKDDKVer.h>
+
 
 #include "Classes.h"
 #include "WUDESIMmain.h"

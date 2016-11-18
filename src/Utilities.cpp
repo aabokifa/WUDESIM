@@ -15,9 +15,7 @@ Description: This source file contains multiple small functions that are frequen
 #include <string>  
 #include <iterator>
 #include <numeric>
-#include <stdio.h>
-#include <tchar.h>
-#include <SDKDDKVer.h>
+
 
 #include "Classes.h"
 #include "WUDESIMmain.h"

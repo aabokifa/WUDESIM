@@ -16,9 +16,7 @@ Description: This function imports EPANET input file specified by the user, read
 #include <string>  
 #include <iterator>
 #include <numeric>
-#include <stdio.h>
-#include <tchar.h>
-#include <SDKDDKVer.h>
+
 
 #include "Classes.h"
 #include "WUDESIMmain.h"
