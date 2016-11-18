@@ -21,9 +21,7 @@ Description: This file contains the stochastic demand generation function, which
 #include <string>
 #include <random>
 #include <numeric>
-#include <stdio.h>
-#include <tchar.h>
-#include <SDKDDKVer.h>
+
 
 using namespace std;
 

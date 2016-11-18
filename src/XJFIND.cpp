@@ -15,9 +15,7 @@ Description: This function studies the connectivity of each junction in the netw
 #include <string>  
 #include <iterator>
 #include <numeric>
-#include <stdio.h>
-#include <tchar.h>
-#include <SDKDDKVer.h>
+
 
 #include "Classes.h"
 #include "WUDESIMmain.h"

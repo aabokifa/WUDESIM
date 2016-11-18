@@ -22,9 +22,7 @@ Description: This source file includes the water quality simulation function. It
 #include <string>  
 #include <iterator>
 #include <numeric>
-#include <stdio.h>
-#include <tchar.h>
-#include <SDKDDKVer.h>
+
 
 #include "Classes.h"
 #include "WUDESIMmain.h"
