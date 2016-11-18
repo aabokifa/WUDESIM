@@ -100,11 +100,10 @@ int WQSIM(string WUDESIMinpfileName, Network* net)
 	double n_b = net->reactions.Bulk_order;				 //Bulk reaction order
 	double n_w = net->reactions.Wall_order;				 //Wall reaction order
 	double C_L = net->reactions.Lim_pot;				 //Limiting potential
-
-	// Set transport variables
+	
+    // Set transport variables
 	double D_diff = net->options.Rel_Diffusivity*1.2E-9;           //molecular diffusion coefficient(m2 / sec)
 	double viscosity = net->options.Rel_Viscosity*1E-6;          //water kinematic viscosity(m2 / sec) = 1cSt
-
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -234,8 +233,8 @@ int WQSIM(string WUDESIMinpfileName, Network* net)
 			double u_max = *max_element(u_dum.begin(), u_dum.end());     //maximum flow velocity(m / sec
 			double dx_max = u_max*dt_q;                //maximum delta x(m)
 			double N_min = Lt / dx_max + 1;            //min number of descritization points
-			if (N_min < 3) {						   //Should have at least three descritization points
-				N_min = 3;
+			if (N_min < 10) {						   //Should have at least three descritization points
+				N_min = 10;
 				dx_max = Lt / (N_min - 1);
 				dt_q = dx_max / u_max;
 			}
@@ -307,7 +306,7 @@ int WQSIM(string WUDESIMinpfileName, Network* net)
 
 			for (int i = 0;i < N_steps_act;++i) {
 				Re[i] = u[i] * dp / viscosity;    //Reynolds Number
-				Pe[i] = u[i] * Lt / E_taylor[i]; //Peclet Number based on Taylor's dispersion
+				Pe[i] = u[i] * Lt / E_taylor[i];  //Peclet Number based on Taylor's dispersion
 				if (Re[i] >= 2300) { Sh[i] = 0.023*pow(Re[i], 0.83)*pow(Sc, 0.333); }   //Sherwood Numbr
 				else { Sh[i] = 3.65 + (0.0668*(dp*Re[i] * Sc / Lt)) / (1 + 0.04*pow((dp*Re[i] * Sc / Lt), (2 / 3))); }
 				Kf[i] = Sh[i] * D_diff / dp;                              //Mass transfer coefficient
@@ -375,7 +374,8 @@ int WQSIM(string WUDESIMinpfileName, Network* net)
 
 							//Bulk Reaction step
 							if (C_L == 0) {
-								if (n_b == 1) { C_adv[i] *= exp(Kb* dt_q); }                           //First order bulk reaction
+								if (n_b == 1) { 
+									C_adv[i] *= exp(Kb* dt_q); }                           //First order bulk reaction
 								else { C_adv[i] *= (1 + (n_b - 1)*Kb*pow(C_adv[i], n_b - 1)*dt_q); }   //nth order bulk reaction
 							}
 							else if (n_b > 0) { // dC/dt=Kb*(C_L-C)*C^(n_b-1)
@@ -427,7 +427,8 @@ int WQSIM(string WUDESIMinpfileName, Network* net)
 							//Wall Reaction 
 							double Rw;
 							if (n_w == 1) {        //First order wall reaction
-								Rw = (4 * Kw*Kf[Hstep] / (dp*(Kw + Kf[Hstep])))*Kw_Corr;
+								Rw = ((4. * Kw*Kf[Hstep] )/ (dp*(Kw + Kf[Hstep])))*Kw_Corr;
+								if (Kw + Kf[Hstep] <= 0) { Rw = 0; }
 								C_adv[i] *= exp(Rw* dt_q);
 							}
 							else if (n_w == 0) {   //Zeroth order wall reaction

@@ -19,8 +19,8 @@ public:
 	double diameter;		   //Pipe diameter
 	string node_1;			   //node 1 of pipe
 	string node_2;			   //node 2 of pipe
-	int node_1_conn = 0;		//number of pipe connections to node 1
-	int node_2_conn = 0;		//number of pipe connections to node 2
+	int node_1_conn = 0;	   //number of pipe connections to node 1
+	int node_2_conn = 0;	   //number of pipe connections to node 2
 };
 
 class all_nodes {
@@ -73,8 +73,8 @@ public:
 
 class all_reactions {
 public:
-	double Bulk_coeff = 0;
-	double Wall_coeff = 0;
+	double Bulk_coeff = 0.;
+	double Wall_coeff = 0.;
 	double Bulk_order = 1;
 	double Wall_order = 1;
 	double Lim_pot = 0;
@@ -102,7 +102,9 @@ public:
 
 	vector<all_nodes> junctions;
 
-	vector<string>sources;
+	vector<string>demand_sources;
+
+	vector<string>quality_sources;
 
 	vector<string> tanks;
 

@@ -97,7 +97,7 @@ int OpenEPANETinp(string INPfileName, Network* net)
 			iss >> net->junctions[i].id >> net->junctions[i].elev >> net->junctions[i].demand;
 			if (net->junctions[i].demand < 0)
 			{
-				net->sources.push_back(net->junctions[i].id);
+				net->demand_sources.push_back(net->junctions[i].id);
 			}
 		}
 	}
@@ -162,6 +162,22 @@ int OpenEPANETinp(string INPfileName, Network* net)
 	for (int i = 0;i < N_valves;++i) {
 		istringstream iss(valves_data[i]);
 		iss >> net->valves[i].id >> net->valves[i].start >> net->valves[i].end;
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	// Read Sources data from input file
+
+	vector<string> sources_data;
+	sources_data = InputData(index, EPANETinp, "[SOURCES]");
+
+	int N_sources = sources_data.size();
+
+	net->quality_sources.resize(N_sources);
+
+	for (int i = 0;i < N_sources;++i) {
+		istringstream iss(sources_data[i]);
+		iss >> net->quality_sources[i];
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -241,6 +257,7 @@ int OpenEPANETinp(string INPfileName, Network* net)
 		if (find("Order Wall", reactions_data[i])) { iss >> dummy >> dummy >> net->reactions.Wall_order; }
 		if (find("Limiting Potential", reactions_data[i])) { iss >> dummy >> dummy >> net->reactions.Lim_pot; }
 	}
+
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -274,11 +291,12 @@ int OpenEPANETinp(string INPfileName, Network* net)
 
 	// Reaction Unit Conversion
 	// Bulk
-	net->reactions.Bulk_coeff *= 1 / (24 * 3600); // 1/day --> 1/sec
-												  // Wall
+	net->reactions.Bulk_coeff *= 1. / (24. * 3600.); // 1/day --> 1/sec
+	
+    // Wall
 	if (net->options.unit_sys == 0) {
-		if (net->reactions.Wall_order == 1) { net->reactions.Wall_coeff *= 0.3048 / (24 * 3600); }                       // ft/day --> m/sec
-		else if (net->reactions.Wall_order == 0) { net->reactions.Wall_coeff /= (pow(0.3048, 2) * 24 * 3600); }        // 1/ft2/day --> 1/m2/sec
+		if (net->reactions.Wall_order == 1) { net->reactions.Wall_coeff *= 0.3048 / (24. * 3600.); }                       // ft/day --> m/sec
+		else if (net->reactions.Wall_order == 0) { net->reactions.Wall_coeff /= (pow(0.3048, 2) * 24. * 3600.); }          // 1/ft2/day --> 1/m2/sec
 	}
 	else if (net->options.unit_sys == 1) { net->reactions.Wall_coeff *= 1 / (24 * 3600); }  // m/day --> m/sec
 

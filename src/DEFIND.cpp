@@ -86,9 +86,9 @@ int DEFIND(Network* net)
 
 
 		//Condition 2: Check DE node is not a source
-		int N_sources = net->sources.size();
+		int N_sources = net->demand_sources.size();
 		for (int j = 0;j < N_sources;++j) {
-			if (compare(dead_node, net->sources[j])) { goto nextBranch; }
+			if (compare(dead_node, net->demand_sources[j])) { goto nextBranch; }
 		}
 
 		// Condition 3: Check DE node is not a tank
@@ -127,10 +127,15 @@ int DEFIND(Network* net)
 
 		//Now check to see if preceding pipes are to be added to the branch
 		if (other_node_conn == 2) {
-
+			
 			int k = i;
 
 		anotherPipe:; //Will come back to here if more pipes are to be added
+
+			// Check that the upstream node is not a quality source
+			for (int source = 0; source < net->quality_sources.size();source++) {
+				if (compare(other_node, net->quality_sources[source])) {branch++;goto nextBranch;}
+			}
 
 			for (int p = 0;p < N_pipes;p++) {
 
