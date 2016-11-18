@@ -19,8 +19,10 @@ public:
 	double diameter;		   //Pipe diameter
 	string node_1;			   //node 1 of pipe
 	string node_2;			   //node 2 of pipe
-	int node_1_conn = 0;	   //number of pipe connections to node 1
-	int node_2_conn = 0;	   //number of pipe connections to node 2
+	int node_1_conn;		   //number of pipe connections to node 1
+	int node_2_conn;	       //number of pipe connections to node 2
+
+	all_links();
 };
 
 class all_nodes {
@@ -46,38 +48,44 @@ public:
 
 class all_options {
 public:
-	double Rel_Diffusivity=1;
-	double Rel_Viscosity=1;
-	string Flow_UNITS="GPM";
-	string QUAL_TAG="NONE";
-	string QUAL_UNIT="";
+	double Rel_Diffusivity;
+	double Rel_Viscosity;
+	string Flow_UNITS;
+	string QUAL_TAG;
+	string QUAL_UNIT;
 
-	double Flow_unit_conv = 0.0000630901964;
-	int unit_sys = 0;  //0-US 1-SI
+	double Flow_unit_conv;
+	int unit_sys;  //0-US 1-SI
+
+	all_options();
 };
 
 class all_times {
 public:
-	int Duration_hr=0;
-	int Duration_min=0;
-	int Hyd_step_hr=1;
-	int Hyd_step_min=0;
-	int Qual_step_hr=0;
-	int Qual_step_min=0;
-	int Rep_step_hr=1;
-	int Rep_step_min=0;
-	int Rep_start_hr=0;
-	int Rep_start_min=0;
+	int Duration_hr;
+	int Duration_min;
+	int Hyd_step_hr;
+	int Hyd_step_min;
+	int Qual_step_hr;
+	int Qual_step_min;
+	int Rep_step_hr;
+	int Rep_step_min;
+	int Rep_start_hr;
+	int Rep_start_min;
 	int N_steps;
+
+	all_times();
 };
 
 class all_reactions {
 public:
-	double Bulk_coeff = 0.;
-	double Wall_coeff = 0.;
-	double Bulk_order = 1;
-	double Wall_order = 1;
-	double Lim_pot = 0;
+	double Bulk_coeff;
+	double Wall_coeff;
+	double Bulk_order;
+	double Wall_order;
+	double Lim_pot;
+
+	all_reactions();
 };
 
 class dead_end_branch {
@@ -92,7 +100,8 @@ public:
 	vector<vector<double>> boundary;			//Boundary condition profile     (row=pipe /column=concentration@time)
 	vector<vector<double>> terminal;            //terminal concentration profile as simulated by EPANET
 	vector<vector<double>> terminal_new;		//new terminal concentration as simulated by WUDESIM
-
+	
+	dead_end_branch();
 };
 
 
