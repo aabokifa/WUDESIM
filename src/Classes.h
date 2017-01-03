@@ -8,7 +8,7 @@ Description: Header file for class definitions.
 
 #pragma once
 
-#include <vector>  
+#include <vector> 
 
 using namespace std;
 
@@ -96,10 +96,10 @@ public:
 	vector<double> diameter;
 	vector<string> terminal_id;					//IDs of the terminal junctions in the DE branch
 	vector<int> pipe_index;					    //Indices of the pipes in the DE branch
-	vector<vector<double>> pipe_flow;			//Flow profile of dead end pipes (row=pipe/ column=flow@time)
-	vector<vector<double>> boundary;			//Boundary condition profile     (row=pipe /column=concentration@time)
-	vector<vector<double>> terminal;            //terminal concentration profile as simulated by EPANET
-	vector<vector<double>> terminal_new;		//new terminal concentration as simulated by WUDESIM
+	vector<vector<double> > pipe_flow;			//Flow profile of dead end pipes (row=pipe/ column=flow@time)
+	vector<vector<double> > boundary;			//Boundary condition profile     (row=pipe /column=concentration@time)
+	vector<vector<double> > terminal;            //terminal concentration profile as simulated by EPANET
+	vector<vector<double> > terminal_new;		//new terminal concentration as simulated by WUDESIM
 	
 	dead_end_branch();
 };

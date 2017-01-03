@@ -56,18 +56,20 @@ int OpenEPANETrpt(string RPTfileName, Network* net) {
 
 		string Time_hr_str = to_string(Time_hr);
 
-		string link_str = "Link Results at " + Time_hr_str + ":" + Time_min_str + " Hrs:";
-		string node_str = "Node Results at " + Time_hr_str + ":" + Time_min_str + " Hrs:";
+		string link_str_1 = "Link Results at " + Time_hr_str + ":" + Time_min_str + " Hrs:";
+		string link_str_2 = "Link Results at " + Time_hr_str + ":" + Time_min_str +  ":00" + " Hrs:";
 
+		string node_str_1 = "Node Results at " + Time_hr_str + ":" + Time_min_str + " Hrs:";
+		string node_str_2 = "Node Results at " + Time_hr_str + ":" + Time_min_str + ":00" + " Hrs:";
 
 		for (int i = position;i < EPANETrpt.size();++i) {
 			++position;
-			if (find(node_str, EPANETrpt[i])) { k_node.push_back(i); goto find_link; }
+			if ((find(node_str_1, EPANETrpt[i])) || (find(node_str_2, EPANETrpt[i]))) { k_node.push_back(i); goto find_link; }
 		}
 	find_link:;
 		for (int i = position;i < EPANETrpt.size();++i) {
 			++position;
-			if (find(link_str, EPANETrpt[i])) { k_link.push_back(i); goto find_node; }
+			if ((find(link_str_1, EPANETrpt[i])) || (find(link_str_2, EPANETrpt[i]))) { k_link.push_back(i); goto find_node; }
 		}
 	find_node:;
 	}

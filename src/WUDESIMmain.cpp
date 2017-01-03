@@ -21,7 +21,6 @@ int main(int argc, char *argv[])
 	//Check number of input CL arguments is correct
 	if (argc != 4) {
 		cout << "Command line input should be: WUDESIM.exe EPANET.inp EPANET.rpt WUDESIM.inp" << endl;
-		system("pause");
 		return 1;
 	}
 
