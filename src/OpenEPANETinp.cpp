@@ -92,11 +92,19 @@ int OpenEPANETinp(string INPfileName, Network* net)
 
 		for (int i = 0;i < N_nodes;++i) {
 			istringstream iss(node_data[i]);
-			iss >> net->junctions[i].id >> net->junctions[i].elev >> net->junctions[i].demand;
-			if (net->junctions[i].demand < 0)
-			{
-				net->demand_sources.push_back(net->junctions[i].id);
-			}
+			iss >> net->junctions[i].id >> net->junctions[i].elev >> net->junctions[i].demand;			
+		}
+	}
+
+	// Read junction demands
+	node_data = InputData(index, EPANETinp, "[DEMANDS]");
+	
+	for (int i = 0;i < N_nodes;++i) {
+		istringstream iss(node_data[i]);
+		iss >> net->junctions[i].id >> net->junctions[i].demand;
+		if (net->junctions[i].demand < 0)
+		{
+			net->demand_sources.push_back(net->junctions[i].id);
 		}
 	}
 
