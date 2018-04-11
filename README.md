@@ -14,4 +14,4 @@ A special water quality simulation model for the dead-end branches of drinking w
 - WUDESIM.inp ... Name of the corresponding WUDESIM input file
 - WUDESIM.rpt ... Desired name for the WUDESIM report file
 
-- An example of the four files can be found in the \test folder
+An example of the four files can be found in the \test folder
