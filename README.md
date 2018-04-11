@@ -10,6 +10,6 @@ A special water quality simulation model for the dead-end branches of drinking w
 > WUDESIM.exe EPANET.inp EPANET.rpt WUDESIM.inp WUDESIM.rpt
 
 - EPANET.inp  ... Name of the EPANET input file
-- EPANET.rpt  ... Desired name for the EPANAET report file
+- EPANET.rpt  ... Desired name for the EPANET report file
 - WUDESIM.inp ... Name of the corresponding WUDESIM input file
 - WUDESIM.rpt ... Desired name for the WUDESIM report file
