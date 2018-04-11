@@ -21,8 +21,8 @@ int DEFIND(Network*);
 
 int XJFIND(Network*);
 
-int OpenEPANETrpt(string, Network*);
+int OpenEPANETrpt(char*, char*, Network*);
 
-int WQSIM(string, Network*);
+int WQSIM(string, string, Network*);
 
 vector<double> DEMGEN(vector<double>& flow_inp, double dt_q, double dt_h, vector<double>&);

@@ -20,66 +20,17 @@ Description: This function imports EPANET report file specified by the user, and
 #include "Classes.h"
 #include "WUDESIMmain.h"
 #include "Utilities.h"
+#include "epanet2.h"
+
 
 using namespace std;
 
-
-int OpenEPANETrpt(string RPTfileName, Network* net) {	
-
-	// Import EPANET report file (.rpt)
-
-	vector<string> EPANETrpt;
-	EPANETrpt = ImportFile(RPTfileName);
-
-	if (EPANETrpt.empty()) {
-		cout << RPTfileName << "is empty/corrupt!" << endl;
-		return 1;
-	}
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	// Find header locations
-
-	vector<int> k_link;
-	vector<int> k_node;
-
-	int position = 0; //To continue search from last position
-	for (int r_step = 0;r_step < net->times.N_steps;++r_step) {
-
-		double Time = (r_step)*(net->times.Rep_step_hr * 60 + net->times.Rep_step_min) + (net->times.Rep_start_hr * 60 + net->times.Rep_start_min);
-		int Time_hr = floor(Time / 60.);
-		int Time_min = Time - Time_hr * 60;
-
-		string Time_min_str;
-		if (Time_min > 9) { Time_min_str = to_string(Time_min); }
-		else { Time_min_str = "0" + to_string(Time_min); }
-
-		string Time_hr_str = to_string(Time_hr);
-
-		string link_str_1 = "Link Results at " + Time_hr_str + ":" + Time_min_str + " Hrs:";
-		string link_str_2 = "Link Results at " + Time_hr_str + ":" + Time_min_str +  ":00" + " Hrs:";
-
-		string node_str_1 = "Node Results at " + Time_hr_str + ":" + Time_min_str + " Hrs:";
-		string node_str_2 = "Node Results at " + Time_hr_str + ":" + Time_min_str + ":00" + " Hrs:";
-
-		for (int i = position;i < EPANETrpt.size();++i) {
-			++position;
-			if ((find(node_str_1, EPANETrpt[i])) || (find(node_str_2, EPANETrpt[i]))) { k_node.push_back(i); goto find_link; }
-		}
-	find_link:;
-		for (int i = position;i < EPANETrpt.size();++i) {
-			++position;
-			if ((find(link_str_1, EPANETrpt[i])) || (find(link_str_2, EPANETrpt[i]))) { k_link.push_back(i); goto find_node; }
-		}
-	find_node:;
-	}
+int OpenEPANETrpt(char* INPfileName, char* RPTfileName, Network* net) {
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	// Read Flow Data for dead end branches
-
+	// Initialize vectors for dead end branches data
 	int N_branches = net->DE_branches.size();
-
 	for (int branch = 0;branch < N_branches;branch++) {
 
 		int n_rows = net->DE_branches[branch].branch_size;
@@ -89,79 +40,141 @@ int OpenEPANETrpt(string RPTfileName, Network* net) {
 		net->DE_branches[branch].boundary.resize(n_rows, vector<double>(n_columns, 0.));
 		net->DE_branches[branch].terminal.resize(n_rows, vector<double>(n_columns, 0.));
 		net->DE_branches[branch].terminal_id.resize(n_rows);
-	}
+		net->DE_branches[branch].bound_id.resize(n_rows);
+	}	
 
-	for (int r_step = 0;r_step < net->times.N_steps;++r_step) {
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		int start_line = k_link[r_step];
-		int end_line = (r_step < net->times.N_steps - 1) ? k_node[r_step + 1] : EPANETrpt.size();
+	// Open EPANET 
+	ENopen(INPfileName, RPTfileName, (char*)"");
 
-		for (int i = start_line;i < end_line;++i) {
-			istringstream iss(EPANETrpt[i]);
-			string id;
-			iss >> id;
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-			for (int branch = 0;branch < N_branches;branch++) {
+	// Extract link flow results
+	int N_links;
+	long t, tstep;
+	float link_flow;
+	char  link_id[16];
+	int Tstep;
+	
+	int second_interval = (net->times.Hyd_step_hr * 60 + net->times.Hyd_step_min) * 60;
 
-				for (int pipe = 0;pipe < net->DE_branches[branch].branch_size;++pipe) {
+	ENgetcount(EN_LINKCOUNT, &N_links);
+	ENopenH();
+	ENinitH(0);
+	do {
+		ENrunH(&t);
 
-					if (id == net->DE_branches[branch].pipe_id[pipe]) {
 
-						//Read flow data
-						iss >> net->DE_branches[branch].pipe_flow[pipe][r_step];
+		if (t % second_interval == 0) {
+			
+			Tstep = t / second_interval;
+
+			for (int i = 1;i <= N_links;i++) {
+
+				ENgetlinkvalue(i, EN_FLOW, &link_flow);
+				ENgetlinkid(i, link_id);
+
+
+				for (int branch = 0;branch < N_branches;branch++) {
+
+					for (int pipe = 0;pipe < net->DE_branches[branch].branch_size;++pipe) {
+
+						if (link_id == net->DE_branches[branch].pipe_id[pipe]) {
+							//Read flow data
+							net->DE_branches[branch].pipe_flow[pipe][Tstep] = link_flow;
+						}
 					}
 				}
+			}
+		}
+		
+		ENnextH(&tstep);
+	} while (tstep > 0);
+	ENcloseH();
+	ENsolveH(); // A complete hydraulic simulation is required before WQ simulations
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	// Based on the flow in each pipe, determine which node is boundary (inlet) and which is terminal (outlet)
+
+	for (int branch = 0;branch < N_branches;branch++) {
+
+		for (int pipe = 0;pipe < net->DE_branches[branch].branch_size;++pipe) {
+
+			string bound_node, term_node;
+
+			if (net->DE_branches[branch].pipe_flow[pipe][Tstep] > 0) {
+
+				bound_node = net->pipes[net->DE_branches[branch].pipe_index[pipe]].node_1;
+				term_node = net->pipes[net->DE_branches[branch].pipe_index[pipe]].node_2;
+
+				net->DE_branches[branch].bound_id[pipe] = bound_node;
+				net->DE_branches[branch].terminal_id[pipe] = term_node;
+			}
+
+			else {
+
+				bound_node = net->pipes[net->DE_branches[branch].pipe_index[pipe]].node_2;
+				term_node = net->pipes[net->DE_branches[branch].pipe_index[pipe]].node_1;
+
+				net->DE_branches[branch].bound_id[pipe] = bound_node;
+				net->DE_branches[branch].terminal_id[pipe] = term_node;
+
 			}
 		}
 
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Extract node quality results
+	int N_nodes;
+	long q, qstep;
+	float node_qual;
+	char node_id[16];
 
-	// Read Boundary & Terminal Concentration
+	ENgetcount(EN_NODECOUNT, &N_nodes);
+	ENopenQ();
+	ENinitQ(0);
+	do {
+		
+		ENrunQ(&q);
 
-	for (int r_step = 0;r_step < net->times.N_steps;++r_step) {
+		if (q % second_interval == 0) {
 
-		int start_line = k_node[r_step];
-		int end_line = k_link[r_step];
+			Tstep = q / second_interval;
 
-		for (int branch = 0;branch < N_branches;branch++) {
+			for (int i = 1;i < N_nodes;i++) {
+				ENgetnodevalue(i, EN_QUALITY, &node_qual);
+				ENgetnodeid(i, node_id);
 
-			for (int pipe = 0;pipe < net->DE_branches[branch].branch_size;++pipe) {
 
-				for (int i = start_line;i < end_line;++i) {
+				for (int branch = 0;branch < N_branches;branch++) {
 
-					istringstream iss(EPANETrpt[i]);
-					string id;
-					iss >> id; //Read node id;
+					for (int pipe = 0;pipe < net->DE_branches[branch].branch_size;++pipe) {
 
-					string bound_node, term_node;
-
-					if (net->DE_branches[branch].pipe_flow[pipe][r_step] > 0) {
-
-						bound_node = net->pipes[net->DE_branches[branch].pipe_index[pipe]].node_1;
-						term_node = net->pipes[net->DE_branches[branch].pipe_index[pipe]].node_2;
-						net->DE_branches[branch].terminal_id[pipe] = term_node;
+						if (node_id == net->DE_branches[branch].bound_id[pipe]) { net->DE_branches[branch].boundary[pipe][Tstep] = node_qual; }
+						if (node_id == net->DE_branches[branch].terminal_id[pipe]) { net->DE_branches[branch].terminal[pipe][Tstep] = node_qual; }
 					}
 
-					else {
-
-						bound_node = net->pipes[net->DE_branches[branch].pipe_index[pipe]].node_2;
-						term_node = net->pipes[net->DE_branches[branch].pipe_index[pipe]].node_1;
-						net->DE_branches[branch].terminal_id[pipe] = term_node;
-
-					}
-
-					double dum;
-					if (id == bound_node) { iss >> dum >> dum >> dum >> net->DE_branches[branch].boundary[pipe][r_step]; }
-					if (id == term_node) { iss >> dum >> dum >> dum >> net->DE_branches[branch].terminal[pipe][r_step]; }
 				}
 			}
+
+
 		}
 
-	}
+		ENnextQ(&qstep);
 
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	} while (qstep > 0);
+	ENcloseQ();	
+	ENsolveQ();
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	// Save report file and close EPANET
+	ENreport();
+	ENclose();
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	// Convert Flow Units
 

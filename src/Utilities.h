@@ -9,6 +9,7 @@ Description: Header file for the Utilities.cpp source file.
 #pragma once
 
 #include "Classes.h"
+#include <vector>
 
 using namespace std;
 
@@ -23,3 +24,5 @@ vector<string> InputData(vector<int>&, vector<string>&, string);
 void solveThomas(vector<double>, vector<double>, vector<double>, vector<double>&, int);
 
 vector < double> interpolation(vector<double>&, vector<double>&, vector<double>&);
+
+double avrg(vector<double>&);

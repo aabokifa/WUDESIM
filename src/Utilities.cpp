@@ -116,9 +116,19 @@ vector < double> interpolation(vector<double>& X, vector<double>& Y, vector<doub
 	vector<double> Y_new(N_new);
 	for (int j = 0;j < N_new;++j) {
 		for (int i = 0;i < N;++i) {
-			if (abs(X_new[j] - X[i]) / X_new[j] <= 1E-6) { X_new[j] = X[i]; break; }
+			if (abs(X_new[j] - X[i]) / X_new[j] <= 1E-6) { Y_new[j] = Y[i]; break; }
 			else if ((X_new[j] >= X[i]) && (X[i + 1] >= X_new[j])) { Y_new[j] = Y[i] + (Y[i + 1] - Y[i])*(X_new[j] - X[i]) / (X[i + 1] - X[i]); break; }
 		}
 	}
 	return Y_new;
+}
+
+double avrg(vector<double>& X) {
+	int N = X.size();
+	double mean = 0;
+	for (int i = 0;i < N;++i) {
+		mean = mean + X[i];
+	}
+	mean = mean / N;
+	return mean;
 }

@@ -65,13 +65,14 @@ int DEFIND(Network* net)
 	int other_node_conn;
 
 	for (int i = 0;i < N_pipes;i++) {
-
+		
 		// Condition 1: Check if one of the two nodes is connected to only one pipe
 		if (net->pipes[i].node_1_conn == 1) {
 
 			dead_node = net->pipes[i].node_1;
 			other_node = net->pipes[i].node_2;
 			other_node_conn = net->pipes[i].node_2_conn; //Number of connections to the other node
+		
 		}
 		else if (net->pipes[i].node_2_conn == 1) {
 
@@ -116,13 +117,17 @@ int DEFIND(Network* net)
 			if (compare(dead_node, net->valves[j].end)) { goto nextBranch; }
 		}
 
+
 		// if you come here then you are a dead-end!
 		N_branches++;
+
+
 		net->DE_branches.resize(N_branches);
+
 		net->DE_branches[branch].pipe_id.push_back(net->pipes[i].id);
 		net->DE_branches[branch].pipe_index.push_back(i);
 		net->DE_branches[branch].branch_size++;
-
+				
 		//Now check to see if preceding pipes are to be added to the branch
 		if (other_node_conn == 2) {
 			

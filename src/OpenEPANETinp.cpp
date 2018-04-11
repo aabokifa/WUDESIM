@@ -96,18 +96,30 @@ int OpenEPANETinp(string INPfileName, Network* net)
 		}
 	}
 
-	// Read junction demands
+	// Read supplemnt junction demands
 	node_data = InputData(index, EPANETinp, "[DEMANDS]");
+	if (node_data.size() != 0) {
+		
+		string junc_id;
+		double junc_demand;
+		for (int i = 0;i < node_data.size(); ++i) {
+			istringstream iss(node_data[i]);
+			iss >> junc_id >> junc_demand;
+			for (int j = 0;j < N_nodes;++j) {
+				if (compare(junc_id,net->junctions[j].id)) {
+					net->junctions[i].demand = net->junctions[i].demand + junc_demand;
+				}
+			}
+		}
+	}
 	
 	for (int i = 0;i < N_nodes;++i) {
-		istringstream iss(node_data[i]);
-		iss >> net->junctions[i].id >> net->junctions[i].demand;
+
 		if (net->junctions[i].demand < 0)
 		{
 			net->demand_sources.push_back(net->junctions[i].id);
 		}
 	}
-
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	//Read Tanks data from input file
@@ -238,13 +250,20 @@ int OpenEPANETinp(string INPfileName, Network* net)
 	}
 
 	if (net->times.Duration_hr + net->times.Duration_min == 0) { cout << "WUDESIM can't run single period snapshot analysis" << endl; return 1; }
-
+	
+	if (net->times.Hyd_step_hr * 60 + net->times.Hyd_step_min != net->times.Rep_step_hr * 60 + net->times.Rep_step_min) {
+		cout << "The report time step must be equivalent to the hydraulic time step to get accurate water quality results " << endl; return 1;
+	}
 
 	if (net->times.Qual_step_hr + net->times.Qual_step_min == 0) {
+		
 		net->times.Qual_step_min = floor((net->times.Hyd_step_hr * 60 + net->times.Hyd_step_min) / 10);
 	}
 
-	net->times.N_steps = ((net->times.Duration_hr - net->times.Rep_start_hr) * 60 + (net->times.Duration_min - net->times.Rep_start_min)) / (net->times.Rep_step_hr * 60 + net->times.Rep_step_min) + 1;
+	net->times.N_steps = ((net->times.Duration_hr) * 60 + (net->times.Duration_min)) / (net->times.Hyd_step_hr * 60 + net->times.Hyd_step_min) + 1;
+	
+	net->times.N_steps_rep = ((net->times.Duration_hr - net->times.Rep_start_hr) * 60 + (net->times.Duration_min - net->times.Rep_start_min)) / (net->times.Rep_step_hr * 60 + net->times.Rep_step_min) + 1;
+
 	if (net->times.N_steps <= 0) { return 1; }
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -304,7 +323,7 @@ int OpenEPANETinp(string INPfileName, Network* net)
 		if (net->reactions.Wall_order == 1) { net->reactions.Wall_coeff *= 0.3048 / (24. * 3600.); }                       // ft/day --> m/sec
 		else if (net->reactions.Wall_order == 0) { net->reactions.Wall_coeff /= (pow(0.3048, 2) * 24. * 3600.); }          // 1/ft2/day --> 1/m2/sec
 	}
-	else if (net->options.unit_sys == 1) { net->reactions.Wall_coeff *= 1 / (24 * 3600); }  // m/day --> m/sec
+	else if (net->options.unit_sys == 1) { net->reactions.Wall_coeff *= 1 / (24. * 3600.);}  // m/day --> m/sec
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

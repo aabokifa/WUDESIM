@@ -73,6 +73,7 @@ public:
 	int Rep_start_hr;
 	int Rep_start_min;
 	int N_steps;
+	int N_steps_rep;
 
 	all_times();
 };
@@ -90,17 +91,21 @@ public:
 
 class dead_end_branch {
 public:
-	int branch_size;						//Branch size;
+	int branch_size = 0;						//Branch size;
 	vector<string> pipe_id;						//IDs of the pipes in the DE branch
 	vector<double> length;
 	vector<double> diameter;
 	vector<string> terminal_id;					//IDs of the terminal junctions in the DE branch
+	vector<string> bound_id;					//IDs of the boundary (inlet) junctions in the DE branch
 	vector<int> pipe_index;					    //Indices of the pipes in the DE branch
+	vector<int> N_segment;						//Number of segments for correction factors
 	vector<vector<double> > pipe_flow;			//Flow profile of dead end pipes (row=pipe/ column=flow@time)
 	vector<vector<double> > boundary;			//Boundary condition profile     (row=pipe /column=concentration@time)
-	vector<vector<double> > terminal;            //terminal concentration profile as simulated by EPANET
+	vector<vector<double> > terminal;           //terminal concentration profile as simulated by EPANET
 	vector<vector<double> > terminal_new;		//new terminal concentration as simulated by WUDESIM
-	
+	vector<vector<double> > Reynolds;		    //Reynolds number as calculated by WUDESIM
+	vector<vector<double> > Correction_factors; //Correction Factors
+
 	dead_end_branch();
 };
 
@@ -111,9 +116,9 @@ public:
 
 	vector<all_nodes> junctions;
 
-	vector<string>demand_sources;
+	vector<string> demand_sources;
 
-	vector<string>quality_sources;
+	vector<string> quality_sources;
 
 	vector<string> tanks;
 
