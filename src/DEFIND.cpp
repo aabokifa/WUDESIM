@@ -64,6 +64,12 @@ int DEFIND(Network* net)
 
 	int other_node_conn;
 
+	int N_sources = net->demand_sources.size();
+	int N_tanks = net->tanks.size();
+	int N_reserv = net->reservoirs.size();
+	int N_pumps = net->pumps.size();
+	int N_valves = net->valves.size();
+
 	for (int i = 0;i < N_pipes;i++) {
 		
 		// Condition 1: Check if one of the two nodes is connected to only one pipe
@@ -85,33 +91,27 @@ int DEFIND(Network* net)
 
 
 		//Condition 2: Check DE node is not a source
-		int N_sources = net->demand_sources.size();
 		for (int j = 0;j < N_sources;++j) {
 			if (compare(dead_node, net->demand_sources[j])) { goto nextBranch; }
 		}
 
 		// Condition 3: Check DE node is not a tank
-		int N_tanks = net->tanks.size();
 		for (int j = 0;j < N_tanks;++j) {
 			if (compare(dead_node, net->tanks[j])) { goto nextBranch; }
 		}
 
 		// Condition 4: Check DE node is not a reservoir
-		int N_reserv = net->reservoirs.size();
 		for (int j = 0;j < N_reserv;++j) {
 			if (compare(dead_node, net->reservoirs[j])) { goto nextBranch; }
 		}
 
 		// Condition 5: Check DE node is not a pump
-		int N_pumps = net->pumps.size();
 		for (int j = 0;j < N_pumps;++j) {
 			if (compare(dead_node, net->pumps[j].start)) { goto nextBranch; }
 			if (compare(dead_node, net->pumps[j].end)) { goto nextBranch; }
 		}
 
 		// Condition 6: Check DE node is not a valve
-		int N_valves = net->valves.size();
-
 		for (int j = 0;j < N_valves;++j) {
 			if (compare(dead_node, net->valves[j].start)) { goto nextBranch; }
 			if (compare(dead_node, net->valves[j].end)) { goto nextBranch; }
