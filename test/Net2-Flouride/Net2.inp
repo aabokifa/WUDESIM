@@ -236,6 +236,10 @@ menu).
  Status             	No
  Summary            	No
  Page               	0
+ NODES			ALL
+ LINKS			ALL
+ Flow		PRECISION  4
+ Quality        PRECISION  4
 
 [OPTIONS]
  Units              	GPM
