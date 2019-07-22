@@ -1,0 +1,164 @@
+[TITLE]
+
+[JUNCTIONS]
+;ID              	Elev        	Demand      	Pattern          
+ 33			0	      	0.00000			;
+ i1			0		0.12841		flow_pat;
+ i2			0		0.07841		flow_pat;
+ i3			0		0.16053		flow_pat;
+ i4			0		0.24106		flow_pat;
+ 34			0		0.39159		flow_pat;
+	
+	
+[RESERVOIRS]
+;ID            Head        	Pattern         
+src		1000;			 
+
+[TANKS]
+;ID              	Elevation   	InitLevel   	MinLevel    	MaxLevel    	Diameter    	MinVol      	VolCurve
+ 
+[PIPES]
+;ID              	Node1           	Node2           Length      	Diameter    	Roughness   	MinorLoss   	Status
+L1			src			33		0.01		8		100.00		0		Open	;
+P1              	33            		i1            	41.724        	8         	100.00		0           	Open  	;
+P2              	i1            		i2           	87.807        	8         	100.00		0           	Open  	;
+P3              	i2            		i3            	88.266        	8         	100.00		0           	Open  	;
+P4              	i3            		i4            	108.882        	8         	100.00		0           	Open  	;
+P5              	i4            		34           	73.320        	8        	100.00		0           	Open  	;
+
+[PUMPS]
+;ID              	Node1           	Node2           	Parameters
+ 
+[VALVES]
+;ID              	Node1           	Node2           	Diameter    	Type	Setting     	MinorLoss   
+
+[TAGS]
+
+[DEMANDS]
+;Junction        	Demand      	Pattern         	Category
+
+[STATUS]
+;ID              	Status/Setting
+
+[PATTERNS]
+;ID              	Multipliers
+bound_conc_pat		0.1	0.0971	0.0942	0.0913	0.0884	0.0855	0.0824	0.0797	0.0775	0.0754
+bound_conc_pat		0.0733	0.07	0.068	0.0661	0.0643	0.0625	0.0608	0.0592	0.0576	0.0561
+bound_conc_pat		0.0546	0.053	0.3654	0.3936	0.4034	0.4029	0.4108	0.4089	0.4016	0.0707
+bound_conc_pat		0.0688	0.0669	0.0649	0.0631	0.2651	0.3952	0.3842	0.4116	0.087	0.0846
+bound_conc_pat		0.0823	0.08	0.0779	0.0758	0.0738	0.0717	0.0697	0.3277	0.3898	0.3939
+bound_conc_pat		0.4121	0.4108	0.4006	0.3813	0.0863	0.0839			
+											
+flow_pat		1.89	1.56	1.45	1.45	1.34	1.78	1.92	1.00	1.00	2.01
+flow_pat		3.69	1.45	1.38	1.02	2.14	0.92	0.46	1.17	0.56	1.00
+flow_pat		1.89	2.34	1.78	1.89	0.90	1.65	1.54	1.09	1.32	1.59
+flow_pat		1.49	2.58	1.68	2.01	1.68	1.45	1.56	1.73	1.37	0.92
+flow_pat		1.02	0.69	0.77	1.11	1.68	2.01	1.89	1.45	1.23	2.05
+flow_pat		1.54	1.22	1.32	1.22	1.22	1.89				
+
+
+[CURVES]
+;ID              	X-Value     	Y-Value
+
+
+[CONTROLS]
+
+
+[RULES]
+
+[ENERGY]
+
+[EMITTERS]
+;Junction        	Coefficient
+
+[QUALITY]
+;Node            	InitQual
+ 33			0.1;
+ i1			0.1;
+ i2			0.1;
+ i3			0.1;
+ i4			0.1;
+ 34			0.1;
+
+
+[SOURCES]
+;Node            	Type        	Quality     	Pattern
+33			SETPOINT	1.0	bound_conc_pat;
+
+[REACTIONS]
+;Type     	Pipe/Tank       	Coefficient
+
+
+[REACTIONS]
+ Order Bulk            	1
+ Order Tank            	1
+ Order Wall            	1
+ Global Bulk            -0.55
+ Global Wall           	-0.15
+ Limiting Potential    	0.0
+ Roughness Correlation 	0.0
+
+[MIXING]
+;Tank            	Model
+
+[TIMES]
+ Duration           	55:00 
+ Hydraulic Timestep 	1:00 
+ Quality Timestep   	0:01 
+ Pattern Timestep   	1:00 
+ Pattern Start      	0:00 
+ Report Timestep    	1:00 
+ Report Start       	0:00 
+ Start ClockTime    	8 am
+ Statistic          	None
+
+[REPORT]
+ Status             	No
+ Summary            	No
+ Page               	0
+ NODES			ALL
+ LINKS			ALL
+ Flow			PRECISION  4
+ Quality   		PRECISION  4
+
+[OPTIONS]
+ Units              	GPM
+ Headloss           	H-W
+ Specific Gravity   	1.0
+ Viscosity          	1.0
+ Trials             	40
+ Accuracy           	0.001
+ CHECKFREQ          	2
+ MAXCHECK           	10
+ DAMPLIMIT          	0
+ Unbalanced         	Continue 10
+ Pattern            	1
+ Demand Multiplier  	1.0
+ Emitter Exponent   	0.5
+ Quality            	Flouride mg/l
+ Diffusivity        	1.0
+ Tolerance          	0.01
+
+[COORDINATES]
+;Node           X-Coord         	Y-Coord
+src		0			-100;
+33		0			0;
+i1		42			0;
+i2		130			0;	
+i3		218			0;
+i4		327			0;
+34		400			0;
+
+
+
+[VERTICES]
+;Link            	X-Coord         	Y-Coord
+
+[LABELS]
+;X-Coord           Y-Coord          Label & Anchor Node
+ 
+
+[BACKDROP]
+ 
+
+[END]

@@ -1,0 +1,146 @@
+[TITLE]
+
+[JUNCTIONS]
+;ID              	Elev        	Demand      	Pattern          
+ 8			0	      	0.00000		flow_pat;
+ 10			0		1.00000		flow_pat;
+	
+	
+[RESERVOIRS]
+;ID            Head        	Pattern         
+src		1000;			 
+
+[TANKS]
+;ID              	Elevation   	InitLevel   	MinLevel    	MaxLevel    	Diameter    	MinVol      	VolCurve
+ 
+[PIPES]
+;ID              	Node1           	Node2           Length      	Diameter    	Roughness   	MinorLoss   	Status
+L1			src			8		0.01		8		140.00		0		Open	;
+P1              	8            		10            	1000        	8         	140.00		0           	Open  	;
+
+
+[PUMPS]
+;ID              	Node1           	Node2           	Parameters
+ 
+[VALVES]
+;ID              	Node1           	Node2           	Diameter    	Type	Setting     	MinorLoss   
+
+[TAGS]
+
+[DEMANDS]
+;Junction        	Demand      	Pattern         	Category
+
+[STATUS]
+;ID              	Status/Setting
+
+[PATTERNS]
+;ID              	Multipliers
+bound_conc_pat		1.0000	1.0000	1.0000	1.0000	1.0000	1.0000	1.0000	1.0000	1.0000	1.0000
+bound_conc_pat		0.9840	1.0323	0.7944	0.6942	0.5268	0.5268	0.5268	0.5268	0.5268	0.5911
+bound_conc_pat		0.6927	0.9583	0.8322	0.2082	0.1946	0.1338	0.1338	0.1338	0.1338	0.1338
+bound_conc_pat		0.1338	0.8072	0.9290	0.1320	0.1235	0.1066	0.0878	0.1061	0.0902	0.0902
+bound_conc_pat		0.0902	0.0902	0.0902	0.0902	0.0902	0.0902	0.8443	0.0885	0.0885	0.0735
+bound_conc_pat		0.0871	0.0871	0.0871	0.0871	0.0871	0.0871				
+											
+flow_pat		6.30	5.20	4.85	4.85	4.45	5.95	6.40	3.35	3.35	6.70
+flow_pat		12.30	4.85	4.60	3.40	7.15	3.05	1.55	3.90	1.85	3.35
+flow_pat		6.30	7.80	5.95	6.30	3.00	5.50	5.15	3.65	4.40	5.30
+flow_pat		4.95	8.60	5.60	6.70	5.60	4.85	5.20	5.75	4.55	3.05
+flow_pat		3.40	2.30	2.55	3.70	5.60	6.70	6.30	4.85	4.10	6.85
+flow_pat		5.15	4.05	4.40	4.05	4.05	6.30	
+		
+[CURVES]
+;ID              	X-Value     	Y-Value
+
+
+[CONTROLS]
+
+
+[RULES]
+
+[ENERGY]
+
+[EMITTERS]
+;Junction        	Coefficient
+
+[QUALITY]
+;Node            	InitQual
+ 8			1.0;
+ 10			1.0;
+
+[SOURCES]
+;Node            	Type        	Quality     	Pattern
+8			SETPOINT	1.0	bound_conc_pat;
+
+[REACTIONS]
+;Type     	Pipe/Tank       	Coefficient
+
+
+[REACTIONS]
+ Order Bulk            	1
+ Order Tank            	1
+ Order Wall            	1
+ Global Bulk            0.0
+ Global Wall           	0.0
+ Limiting Potential    	0.0
+ Roughness Correlation 	0.0
+
+[MIXING]
+;Tank            	Model
+
+[TIMES]
+ Duration           	55:00 
+ Hydraulic Timestep 	1:00 
+ Quality Timestep   	0:01
+ Pattern Timestep   	1:00 
+ Pattern Start      	0:00 
+ Report Timestep    	1:00 
+ Report Start       	0:00 
+ Start ClockTime    	8 am
+ Statistic          	None
+
+[REPORT]
+ Status             	No
+ Summary            	No
+ Page               	0
+ NODES			ALL
+ LINKS			ALL
+ Flow			PRECISION  4
+ Quality   		PRECISION  4
+
+[OPTIONS]
+ Units              	GPM
+ Headloss           	H-W
+ Specific Gravity   	1.0
+ Viscosity          	1.0
+ Trials             	40
+ Accuracy           	0.001
+ CHECKFREQ          	2
+ MAXCHECK           	10
+ DAMPLIMIT          	0
+ Unbalanced         	Continue 10
+ Pattern            	1
+ Demand Multiplier  	1.0
+ Emitter Exponent   	0.5
+ Quality            	Flouride mg/l
+ Diffusivity        	1.0
+ Tolerance          	0.01
+
+[COORDINATES]
+;Node           X-Coord         	Y-Coord
+src		0			-100;
+8		0			0;
+10		1000			0;
+
+
+[VERTICES]
+;Link            	X-Coord         	Y-Coord
+
+[LABELS]
+;X-Coord           Y-Coord          Label & Anchor Node
+ 
+
+[BACKDROP]
+ 
+
+[END]

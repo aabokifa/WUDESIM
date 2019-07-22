@@ -3,7 +3,6 @@ Project:     WUDESIM ver. 1 BETA
 File:        Classes.h
 Author:      Ahmed Abokifa
 Date:        10/25/2016
-Description: Header file for class definitions.
 */
 
 #pragma once
@@ -22,6 +21,7 @@ public:
 	int node_1_conn;		   //number of pipe connections to node 1
 	int node_2_conn;	       //number of pipe connections to node 2
 
+	//constructor
 	all_links();
 };
 
@@ -57,6 +57,7 @@ public:
 	double Flow_unit_conv;
 	int unit_sys;  //0-US 1-SI
 
+	//constructor
 	all_options();
 };
 
@@ -75,6 +76,7 @@ public:
 	int N_steps;
 	int N_steps_rep;
 
+	//constructor
 	all_times();
 };
 
@@ -86,32 +88,75 @@ public:
 	double Wall_order;
 	double Lim_pot;
 
+	//constructor
 	all_reactions();
+};
+
+class dead_end_options {
+public:
+	// correction factors
+	int    Corr_Fact_fl; //0 = no correction; 1 = flow-based correction; 2 = spacing-based correction
+	
+	double conn_demand;
+	double seg_length;
+	
+	int flow_corr_fl; //0 = no correction; 1 = flow correction is implemented
+	int disp_corr_fl; //0 = no correction; 1 = flow correction is implemented
+	int Rw_corr_fl; //0 = no correction; 1 = flow correction is implemented
+
+	// stochastic demands
+	bool Stoc_dem_fl; //1=True, 0=False
+	double u1;
+	double u2;
+	double s1;
+	double s2;
+	double avg_int;
+
+	// Dispersive transport
+	int Dispersion_fl;
+
+	// Simulated branches
+	vector<double> simulated_branches;
+
+	// Constructor
+	dead_end_options();
 };
 
 class dead_end_branch {
 public:
-	int branch_size = 0;						//Branch size;
+	int branch_size = 0;						//Number of pipes in the DE branch;
 	vector<string> pipe_id;						//IDs of the pipes in the DE branch
-	vector<double> length;
-	vector<double> diameter;
+	vector<double> length;						//Lengths of pipes in the DE branch
+	vector<double> diameter;					//Diameters of pipes in the DE branch
 	vector<string> terminal_id;					//IDs of the terminal junctions in the DE branch
 	vector<string> bound_id;					//IDs of the boundary (inlet) junctions in the DE branch
 	vector<int> pipe_index;					    //Indices of the pipes in the DE branch
-	vector<int> N_segment;						//Number of segments for correction factors
-	vector<vector<double> > pipe_flow;			//Flow profile of dead end pipes (row=pipe/ column=flow@time)
-	vector<vector<double> > boundary;			//Boundary condition profile     (row=pipe /column=concentration@time)
-	vector<vector<double> > terminal;           //terminal concentration profile as simulated by EPANET
-	vector<vector<double> > terminal_new;		//new terminal concentration as simulated by WUDESIM
+	vector<int> N_segment;						//Number of segments for correction factors for each pipe in the DE branch
+	vector<vector<double> > pipe_flow_EPANET;	//Flow profile of the pipes in the DE branch (row=pipe/ column=flow@time)
+	vector<vector<double> > pipe_flow_WUDESIM;	//Flow profile of the pipes in the DE branch (row=pipe/ column=flow@time)
+	vector<vector<double> > boundary_C_EPANET;			//Boundary condition profile  (row=pipe/ column=concentration@time)
+	vector<vector<double> > terminal_C_EPANET;  //terminal concentration profile as simulated by EPANET (row=pipe/ column=concentration@time)
+	vector<vector<double> > terminal_C_WUDESIM; //new terminal concentration as simulated by WUDESIM (row=pipe/ column=concentration@time)
 	vector<vector<double> > Reynolds;		    //Reynolds number as calculated by WUDESIM
-	vector<vector<double> > Correction_factors; //Correction Factors
+	vector<vector<double> > Peclet;		        //Peclet number as calculated by WUDESIM
+	vector<vector<double> > Res_time;		    //Residence Time as calculated by WUDESIM
+	vector<vector<double> > Correction_factors; //Correction Factors (row=pipe/ columns1-3 = Correction factors for Re, Pe, and Da, respectively)
 
+	//constructor
 	dead_end_branch();
 };
 
 
 class Network {
 public:
+	char* EPANET_INP;
+        
+	char* EPANET_RPT;
+
+	string WUDESIM_INP;
+	
+	string WUDESIM_RPT;
+
 	vector<all_links> pipes;
 
 	vector<all_nodes> junctions;
@@ -129,6 +174,8 @@ public:
 	vector<all_valves> valves;
 
 	all_options options;
+
+	dead_end_options DE_options;
 
 	all_times times;
 

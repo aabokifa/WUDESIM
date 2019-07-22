@@ -1,0 +1,170 @@
+[TITLE]
+
+[JUNCTIONS]
+;ID              	Elev        	Demand      	Pattern          
+ 8			0	      	0.00000		flow_pat;
+ i1			0		0.04831         flow_pat;
+ i2			0		0.10966		flow_pat;
+ i3			0		0.08789		flow_pat;
+ i4			0		0.10747		flow_pat;
+ i5			0		0.14923		flow_pat;
+ i6			0		0.13966		flow_pat;
+ 10			0		0.35778		flow_pat;
+	
+	
+[RESERVOIRS]
+;ID            Head        	Pattern         
+src		1000;			 
+
+[TANKS]
+;ID              	Elevation   	InitLevel   	MinLevel    	MaxLevel    	Diameter    	MinVol      	VolCurve
+ 
+[PIPES]
+;ID              	Node1           	Node2           Length      	Diameter    	Roughness   	MinorLoss   	Status
+L1			src			8		0.01		8		140.00		0		Open	;
+P1              	8            		i1            	205.308        	8         	140.00		0           	Open  	;
+P2              	i1            		i2           	185.927        	8         	140.00		0           	Open  	;
+P3              	i2            		i3            	118.323        	8         	140.00		0           	Open  	;
+P4              	i3            		i4            	142.829        	8         	140.00		0           	Open  	;
+P5              	i4            		i5           	112.345        	8        	140.00		0           	Open  	;
+P6              	i5           		i6            	114.841        	8         	140.00		0           	Open  	;
+P7              	i6            		10            	120.426        	8         	140.00		0           	Open  	;
+
+
+[PUMPS]
+;ID              	Node1           	Node2           	Parameters
+ 
+[VALVES]
+;ID              	Node1           	Node2           	Diameter    	Type	Setting     	MinorLoss   
+
+[TAGS]
+
+[DEMANDS]
+;Junction        	Demand      	Pattern         	Category
+
+[STATUS]
+;ID              	Status/Setting
+
+[PATTERNS]
+;ID              	Multipliers
+bound_conc_pat		0.2000	0.1924	0.1852	0.1784	0.1719	0.1656	0.1594	0.1533	0.1479	0.2147
+bound_conc_pat		0.6096	0.6517	0.6507	0.6391	0.6278	0.6110	0.5953	0.5579	0.5381	0.5244
+bound_conc_pat		0.5062	0.0907	0.4481	0.5976	0.6031	0.6099	0.6175	0.5826	0.5453	0.5255
+bound_conc_pat		0.5059	0.1075	0.1032	0.5107	0.6102	0.6297	0.6371	0.6361	0.6421	0.6188
+bound_conc_pat		0.6028	0.5818	0.5669	0.5523	0.5136	0.4943	0.1116	0.4522	0.5253	0.5839
+bound_conc_pat		0.6195	0.6014	0.5799	0.5371	0.5179	0.4993				
+											
+flow_pat		6.30	5.20	4.85	4.85	4.45	5.95	6.40	3.35	3.35	6.70
+flow_pat		12.30	4.85	4.60	3.40	7.15	3.05	1.55	3.90	1.85	3.35
+flow_pat		6.30	7.80	5.95	6.30	3.00	5.50	5.15	3.65	4.40	5.30
+flow_pat		4.95	8.60	5.60	6.70	5.60	4.85	5.20	5.75	4.55	3.05
+flow_pat		3.40	2.30	2.55	3.70	5.60	6.70	6.30	4.85	4.10	6.85
+flow_pat		5.15	4.05	4.40	4.05	4.05	6.30				
+
+[CURVES]
+;ID              	X-Value     	Y-Value
+
+
+[CONTROLS]
+
+
+[RULES]
+
+[ENERGY]
+
+[EMITTERS]
+;Junction        	Coefficient
+
+[QUALITY]
+;Node            	InitQual
+ 8			0.2;
+ i1			0.2;
+ i2			0.2;
+ i3			0.2;
+ i4			0.2;
+ i5			0.2;
+ i6			0.2;
+ 10			0.2;
+
+[SOURCES]
+;Node            	Type        	Quality     	Pattern
+8			SETPOINT	1.0	bound_conc_pat;
+
+[REACTIONS]
+;Type     	Pipe/Tank       	Coefficient
+
+
+[REACTIONS]
+ Order Bulk            	1
+ Order Tank            	1
+ Order Wall            	1
+ Global Bulk            -0.55
+ Global Wall           	-0.15
+ Limiting Potential    	0.0
+ Roughness Correlation 	0.0
+
+[MIXING]
+;Tank            	Model
+
+[TIMES]
+ Duration           	55:00 
+ Hydraulic Timestep 	1:00 
+ Quality Timestep   	0:01 
+ Pattern Timestep   	1:00 
+ Pattern Start      	0:00 
+ Report Timestep    	1:00 
+ Report Start       	0:00 
+ Start ClockTime    	8 am
+ Statistic          	None
+
+[REPORT]
+ Status             	No
+ Summary            	No
+ Page               	0
+ NODES			ALL
+ LINKS			ALL
+ Flow			PRECISION  4
+ Quality   		PRECISION  4
+
+[OPTIONS]
+ Units              	GPM
+ Headloss           	H-W
+ Specific Gravity   	1.0
+ Viscosity          	1.0
+ Trials             	40
+ Accuracy           	0.001
+ CHECKFREQ          	2
+ MAXCHECK           	10
+ DAMPLIMIT          	0
+ Unbalanced         	Continue 10
+ Pattern            	1
+ Demand Multiplier  	1.0
+ Emitter Exponent   	0.5
+ Quality            	Chlorine mg/l
+ Diffusivity        	1.0
+ Tolerance          	0.01
+
+[COORDINATES]
+;Node           X-Coord         	Y-Coord
+src		0			-100;
+8		0			0;
+i1		205			0;
+i2		391			0;	
+i3		510			0;
+i4		652			0;
+i5		765			0;
+i6		880			0;
+10		1000			0;
+
+
+[VERTICES]
+;Link            	X-Coord         	Y-Coord
+
+[LABELS]
+;X-Coord           Y-Coord          Label & Anchor Node
+ 
+
+[BACKDROP]
+ 
+
+[END]

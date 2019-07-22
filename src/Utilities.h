@@ -3,7 +3,6 @@ Project:     WUDESIM ver. 1 BETA
 File:        Utilities.h
 Author:      Ahmed Abokifa
 Date:        10/25/2016
-Description: Header file for the Utilities.cpp source file.
 */
 
 #pragma once
@@ -13,9 +12,9 @@ Description: Header file for the Utilities.cpp source file.
 
 using namespace std;
 
-bool compare(string str1, string str2);
+bool compare_str(string str1, string str2);
 
-bool find(string str1, string str2);
+bool find_str(string str1, string str2);
 
 vector<string> ImportFile(string);
 

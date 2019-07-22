@@ -3,7 +3,6 @@ Project:     WUDESIM ver. 1 BETA
 File:        Utilities.cpp
 Author:      Ahmed Abokifa
 Date:        10/25/2016
-Description: This source file contains multiple small functions that are frequently utilized during the execution of other source codes.
 */
 
 #include <iostream> 
@@ -17,19 +16,22 @@ Description: This source file contains multiple small functions that are frequen
 #include <numeric>
 
 
+#include "WUDESIM.h"
 #include "Classes.h"
-#include "WUDESIMmain.h"
+#include "WUDESIM_CORE.h"
 #include "Utilities.h"
+#include "WRITING_FUN.h"
+
 
 using namespace std;
 
-bool compare(string str1, string str2) //Compare String 1 to the begining of String 2
+bool compare_str(string str1, string str2) //Compare String 1 to the begining of String 2
 {
 	if (str2.compare(0, str1.length() + 10, str1) == 0) return true;
 	else return false;
 }
 
-bool find(string str1, string str2) //Find String 1 in String 2 case insensitive
+bool find_str(string str1, string str2) //Find String 1 in String 2 case insensitive
 {
 	char c1;
 	char c2=*str1.begin();   //c2 is the first character in str1
@@ -81,7 +83,7 @@ vector<string> InputData(vector<int>& index, vector<string>& A1, string Header)
 	vector<int> k_start;
 	vector<int> k_end;
 	for (int i = 0;i < index.size();++i) {
-		if (find(Header,A1[index[i]])) {
+		if (find_str(Header,A1[index[i]])) {
 			k_start.push_back(index[i] + 1);
 			k_end.push_back(index[i + 1]);
 		}
@@ -94,6 +96,11 @@ vector<string> InputData(vector<int>& index, vector<string>& A1, string Header)
 }
 
 void solveThomas(vector<double> a, vector<double> b, vector<double> c, vector<double> &d, int n) { //Solve Tridiagonal matrix with thomas algorithm
+
+// Vectors a, b, and c are const. They will not be modified                                                                                                                                                        
+// by the function. Vector d  is the LHS of the system of linear equations                                                                                                                                                     
+// and thus will be calculated and updated by the function to give the solution vector   
+	
 	n--; // since we start from x0 (not x1) 
 	c[0] /= b[0];
 	d[0] /= b[0];
