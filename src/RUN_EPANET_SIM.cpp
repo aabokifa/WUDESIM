@@ -27,8 +27,8 @@ using namespace std;
 
 int RUN_EPANET_SIM(Network* net) {
 
-	char* INPfileName = net->EPANET_INP;
-	char* RPTfileName = net->EPANET_RPT;
+	const char* INPfileName = net->EPANET_INP;
+	const char* RPTfileName = net->EPANET_RPT;
 
 	// Initialize vectors for dead-end branches data
 	int N_branches  = net->DE_branches.size();	

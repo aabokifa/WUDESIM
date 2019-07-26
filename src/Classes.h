@@ -124,7 +124,7 @@ public:
 
 class dead_end_branch {
 public:
-	int branch_size = 0;						//Number of pipes in the DE branch;
+	int branch_size;						    //Number of pipes in the DE branch;
 	vector<string> pipe_id;						//IDs of the pipes in the DE branch
 	vector<double> length;						//Lengths of pipes in the DE branch
 	vector<double> diameter;					//Diameters of pipes in the DE branch
@@ -149,13 +149,13 @@ public:
 
 class Network {
 public:
-	char* EPANET_INP;
+	const char* EPANET_INP;
         
-	char* EPANET_RPT;
+	const char* EPANET_RPT;
 
-	string WUDESIM_INP;
+	const char* WUDESIM_INP;
 	
-	string WUDESIM_RPT;
+	const char* WUDESIM_RPT;
 
 	vector<all_links> pipes;
 

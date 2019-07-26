@@ -24,10 +24,8 @@ Date:        10/25/2016
 
 using namespace std;
 
-int GEN_STOC_DEM(Network* net)
+int GEN_STOC_DEM(Network* net, vector<double> DE_branch_simulation)
 {
-	// Find which branches will be simulated
-	vector<double> DE_branch_simulation = net->DE_options.simulated_branches;
 
 	// EPANET demand parameters
 	int N_steps_EPANET = net->times.N_steps;                                               //Number of hydraulic steps

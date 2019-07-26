@@ -23,11 +23,12 @@ int OP_WUDESIM_INP(Network* net) {
 	
 	// Import WUDESIM.inp file
 	string WUDESIMinpfileName = net->WUDESIM_INP;
+	
 	vector<string> WUDESIMinp;
 	WUDESIMinp = ImportFile(WUDESIMinpfileName);
 
 	if (WUDESIMinp.empty()) {
-		cout << WUDESIMinpfileName << "is empty/corrupt!" << endl; return 1;
+		WRITE_OUT_MSG(WUDESIMinpfileName + "is empty/corrupt!"); return 1;
 	}
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -40,7 +41,7 @@ int OP_WUDESIM_INP(Network* net) {
 	}
 	sort(index.begin(), index.end());
 
-	if (index.size() < 5) { cout << WUDESIMinpfileName << " must have [SOL_DISPERSION], [CORR_FACTS], [STOC_DEMANDS], [WUDESIM_OUTPUT], and [END] sections" << endl; return 1; }
+	if (index.size() < 5) { WRITE_OUT_MSG(WUDESIMinpfileName + " must have [SOL_DISPERSION], [CORR_FACTS], [STOC_DEMANDS], [WUDESIM_OUTPUT], and [END] sections"); return 1; }
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
@@ -62,20 +63,20 @@ int OP_WUDESIM_INP(Network* net) {
 			
 
 			if (Dispersion_fl == 'N') {
-				cout << "	o	Solute  dispersion turned OFF " << endl;
+				WRITE_OUT_MSG("	o	Solute  dispersion turned OFF ");
 				net->DE_options.Dispersion_fl = 0;
 			}
 			else if (Dispersion_fl == 'T') {
-				cout << "	o	Solute  dispersion turned ON using Taylor's coefficients "<< endl;
+				WRITE_OUT_MSG("	o	Solute  dispersion turned ON using Taylor's coefficients ");
 				net->DE_options.Dispersion_fl = 1;
 			}
 			else if (Dispersion_fl == 'A') {
-				cout << "	o	Solute  dispersion turned ON using Lee 2004 average dispersion coefficients " << endl;
+				WRITE_OUT_MSG("	o	Solute  dispersion turned ON using Lee 2004 average dispersion coefficients ");
 				net->DE_options.Dispersion_fl = 2;
 			}
 			
 			else {
-				cout << "	o	DISPERSION COEFF flag not recognized " << endl;  return 1;
+				WRITE_OUT_MSG("	o	DISPERSION COEFF flag not recognized ");  return 1;
 			}
 		}
 	}
@@ -113,10 +114,10 @@ int OP_WUDESIM_INP(Network* net) {
 			}
 			else if (Corr_fact_fl == 'N') {  //No correction
 				net->DE_options.Corr_Fact_fl = 0;
-				cout << "	o	Correction factors turned OFF " << endl;
+				WRITE_OUT_MSG("	o	Correction factors turned OFF ");
 			}
 			else {
-				cout << "	o	CORRECTION FACTORS flag not recognized " << endl;  return 1;
+				WRITE_OUT_MSG("	o	CORRECTION FACTORS flag not recognized ");  return 1;
 			}
 		}
 		if (find_str("CONN DEM", Corr_fact_data[i])   && Corr_fact_fl == 'F') { iss >> dummy >> dummy >> conn_demand; }
@@ -136,7 +137,7 @@ int OP_WUDESIM_INP(Network* net) {
 
 	if (Corr_fact_fl == 'F') {
 		// display output
-		cout << "	o	Correction factors turned ON with a connection demand of " << conn_demand << " " << net->options.Flow_UNITS << endl;
+		WRITE_OUT_MSG("	o	Correction factors turned ON with a connection demand of " + toString(conn_demand) + " " + toString(net->options.Flow_UNITS));
 
 		// change flow unit to m3/sec
 		conn_demand *= net->options.Flow_unit_conv;
@@ -150,7 +151,7 @@ int OP_WUDESIM_INP(Network* net) {
 
 		if (net->options.unit_sys == 1) { length_units = "m"; } else { length_units = "ft"; }
 
-		cout << "	o	Correction factors turned ON with a segment spacing of " << seg_length << " " << length_units << endl;
+		WRITE_OUT_MSG("	o	Correction factors turned ON with a segment spacing of " + toString(seg_length) + " " + toString(length_units));
 
 		// Change spacing units to meters
 		if (net->options.unit_sys == 0) { seg_length *= 0.3048; }
@@ -185,7 +186,7 @@ int OP_WUDESIM_INP(Network* net) {
 				net->DE_options.Stoc_dem_fl = 0;
 			}
 			else {
-				cout << "	o	STOCHASTIC DEMANDS flag not recognized " << endl;  return 1;
+				WRITE_OUT_MSG("	o	STOCHASTIC DEMANDS flag not recognized ");  return 1;
 			}
 		}
 
@@ -203,14 +204,14 @@ int OP_WUDESIM_INP(Network* net) {
 
 	if (net->DE_options.Stoc_dem_fl) {
 
-		cout << "	o	Stochastic demands turned ON with an averaging interval of " << net->DE_options.avg_int << " seconds" << endl;
+		WRITE_OUT_MSG("	o	Stochastic demands turned ON with an averaging interval of " + toString(net->DE_options.avg_int) + " seconds");
 
-		if (dt_h_inp <= net->DE_options.avg_int) { cout << "Hydraulic step is not greater than the AVERAGING INTERVAL" << endl; return 1; }
-		if (dt_q     >= net->DE_options.avg_int) { cout << "Water Quality step is not smaller than the AVERAGING INTERVAL" << endl; return 1; }
+		if (dt_h_inp <= net->DE_options.avg_int) { WRITE_OUT_MSG("Hydraulic step is not greater than the AVERAGING INTERVAL"); return 1; }
+		if (dt_q     >= net->DE_options.avg_int) { WRITE_OUT_MSG("Water Quality step is not smaller than the AVERAGING INTERVAL"); return 1; }
 
 	}
 	else {
-		cout << "	o	Stochastic demands turned OFF " << endl;
+		WRITE_OUT_MSG("	o	Stochastic demands turned OFF ");
 	}
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -238,7 +239,7 @@ int OP_WUDESIM_INP(Network* net) {
 				for (int j = 0; j < net->DE_branches.size(); ++j) { simulated_branches.push_back(j); }
 			}
 			else if (WUDESIM_rpt_fl != 'N') {
-				cout << "	o	SIM ALL flag not recognized!" << endl;  return 1;
+				WRITE_OUT_MSG("	o	SIM ALL flag not recognized!");  return 1;
 			}
 		}		
 
@@ -264,18 +265,7 @@ int OP_WUDESIM_INP(Network* net) {
 				}
 			}
 		}
-	}
-	
-	// Check if the list of simulated branches is empty
-	if (simulated_branches.size() == 0) {
-		cout << "	o	No Dead End branches are selected for simulation!" << endl; return 1;
-	}
-	else if ( WUDESIM_rpt_fl == 'Y') {
-		cout << "	o	All Dead End branches will be simulated" << endl;
-	}
-	else {
-		cout << "	o	" << simulated_branches.size() << " Dead End branches will be simulated" << endl;
-	}
+	}	
 	
 	// store the data to the network
 	net->DE_options.simulated_branches = simulated_branches;

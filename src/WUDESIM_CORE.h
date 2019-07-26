@@ -18,14 +18,14 @@ int OP_EPANET_INP(Network*);
 
 int FIND_DE_BRANCHES(Network*);
 
-int OP_WUDESIM_INP(Network*);
-
 int RUN_EPANET_SIM(Network*);
-
-int CALC_CORR_FACT(Network*);
 
 int CALC_DE_PROPERTIES(Network*);
 
-int GEN_STOC_DEM(Network*);
+int OP_WUDESIM_INP(Network*);
 
-int RUN_WUDESIM_SIM(Network*);
+int CALC_CORR_FACT(Network*);
+
+int GEN_STOC_DEM(Network*, vector<double>);
+
+int RUN_WUDESIM_SIM(Network*, vector<double>);

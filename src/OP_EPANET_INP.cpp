@@ -28,13 +28,13 @@ int OP_EPANET_INP(Network* net)
 {
 
 	// Import EPANET input file (.inp)
-	char* INPfileName = net->EPANET_INP;
+	string INPfileName = net->EPANET_INP;
 
 	vector<string> EPANETinp;
 	EPANETinp = ImportFile(INPfileName);
 	
 	if (EPANETinp.empty()) {
-		cout << INPfileName << " is empty/corrupt!" << endl;
+		WRITE_OUT_MSG(INPfileName + "is empty/corrupt!");
 		return 1;
 	}
 
@@ -219,7 +219,7 @@ int OP_EPANET_INP(Network* net)
 	}
 
 	if (find_str("NONE", net->options.QUAL_TAG) || find_str("AGE", net->options.QUAL_TAG) || find_str("TRACE", net->options.QUAL_TAG)) {
-		cout << "WUDESIM can only take CHEMICAL water quality analysis" << endl;
+		WRITE_OUT_MSG("WUDESIM can only take CHEMICAL water quality analysis");
 		return 1;
 	}
 	
@@ -253,11 +253,11 @@ int OP_EPANET_INP(Network* net)
 	}
 
 	// Check that it's not a single period snapshot simulation
-	if (net->times.Duration_hr * 60 + net->times.Duration_min == 0) { cout << "WUDESIM can't run single period snapshot analysis" << endl; return 1; }
+	if (net->times.Duration_hr * 60 + net->times.Duration_min == 0) { WRITE_OUT_MSG("WUDESIM can't run single period snapshot analysis"); return 1; }
 	
 	// Check that the report time step and the hydraulic time step are equivalent
 	if (net->times.Hyd_step_hr * 60 + net->times.Hyd_step_min != net->times.Rep_step_hr * 60 + net->times.Rep_step_min) {
-		cout << "The report time step must be equivalent to the hydraulic time step" << endl; return 1;
+		WRITE_OUT_MSG("The report time step must be equivalent to the hydraulic time step"); return 1;
 	}
 
 	// If no qualtiy step is defined use the default of one tenth of the hydraulic step

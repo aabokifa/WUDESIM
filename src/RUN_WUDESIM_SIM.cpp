@@ -27,12 +27,10 @@ Date:        10/25/2016
 using namespace std;
 
 
-int RUN_WUDESIM_SIM(Network* net)
+int RUN_WUDESIM_SIM(Network* net, vector<double> DE_branch_simulation)
 {
 	/////////////////////////////////////////////INITIALIZE WQ SIMULATION ENGINE/////////////////////////////////////////
 
-	// Find which branches will be simulated
-	vector<double> DE_branch_simulation = net->DE_options.simulated_branches;
 
 	// Read stochastic demands flag
 	bool stoc_dem_fl = net->DE_options.Stoc_dem_fl;
@@ -66,16 +64,13 @@ int RUN_WUDESIM_SIM(Network* net)
 	double viscosity = net->options.Rel_Viscosity * 1E-6;          //water kinematic viscosity(m2 / sec) = 1cSt
 	double Sc = viscosity / D_diff;                                //Schmidt Number
 
-	// Set Correction Factors
-	CALC_CORR_FACT(net);
-
 	/////////////////////////////////////////////Loop for Dead-End Branches/////////////////////////////////////////
 
 	for (int bb = 0; bb < DE_branch_simulation.size(); bb++) {
 
 		int branch = DE_branch_simulation[bb];
 
-		cout << "	o	Simulating Dead-End Branch no." << branch + 1 << endl;
+		WRITE_OUT_MSG("	o	Simulating Dead-End Branch no." + toString(branch + 1));
 
 		// Get number of branches
 		int N_pipes = net->DE_branches[branch].branch_size;
@@ -112,7 +107,7 @@ int RUN_WUDESIM_SIM(Network* net)
 		vector<vector<double>> E_disp(N_pipes, vector<double>(N_steps_act, 0.));
 		net->DE_branches[branch].Peclet.resize(N_pipes, vector<double>(N_steps_act, 0.));
 
-		// Terminal WUDESIM concentration
+		// Initialize Terminal WUDESIM concentration
 		net->DE_branches[branch].terminal_C_WUDESIM.resize(N_pipes, vector<double>(N_steps_act, 0.));
 
 		//Calculate decay coefficients
@@ -184,7 +179,7 @@ int RUN_WUDESIM_SIM(Network* net)
 		dt_q = dt_h_act * 3600 / Nqsteps;                     //Actual quality time step(sec)
 
 		if (dt_q != dt_q_EPANET) {
-			cout << "			Water Quality Step Reduced to " << dt_q << "s" << endl;
+			WRITE_OUT_MSG("			Water Quality Step Reduced to " + toString(dt_q) + "s");
 		}
 
 		// Space discretaztion
