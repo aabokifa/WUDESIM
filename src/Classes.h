@@ -111,6 +111,7 @@ public:
 	double s1;
 	double s2;
 	double avg_int;
+	int N_steps_WUDESIM;
 
 	// Dispersive transport
 	int Dispersion_fl;
@@ -132,15 +133,18 @@ public:
 	vector<string> bound_id;					//IDs of the boundary (inlet) junctions in the DE branch
 	vector<int> pipe_index;					    //Indices of the pipes in the DE branch
 	vector<int> N_segment;						//Number of segments for correction factors for each pipe in the DE branch
+	vector<double> Flow_Correction_factor;      //Flow Correction Factors
+	vector<double> Disp_Correction_factor;      //Dispersion Correction Factors
+	vector<double> Rw_Correction_factor;        //Wall demand Correction Factors
+
 	vector<vector<double> > pipe_flow_EPANET;	//Flow profile of the pipes in the DE branch (row=pipe/ column=flow@time)
 	vector<vector<double> > pipe_flow_WUDESIM;	//Flow profile of the pipes in the DE branch (row=pipe/ column=flow@time)
-	vector<vector<double> > boundary_C_EPANET;			//Boundary condition profile  (row=pipe/ column=concentration@time)
+	vector<vector<double> > boundary_C_EPANET;	//Boundary condition profile  (row=pipe/ column=concentration@time)
 	vector<vector<double> > terminal_C_EPANET;  //terminal concentration profile as simulated by EPANET (row=pipe/ column=concentration@time)
 	vector<vector<double> > terminal_C_WUDESIM; //new terminal concentration as simulated by WUDESIM (row=pipe/ column=concentration@time)
 	vector<vector<double> > Reynolds;		    //Reynolds number as calculated by WUDESIM
 	vector<vector<double> > Peclet;		        //Peclet number as calculated by WUDESIM
 	vector<vector<double> > Res_time;		    //Residence Time as calculated by WUDESIM
-	vector<vector<double> > Correction_factors; //Correction Factors (row=pipe/ columns1-3 = Correction factors for Re, Pe, and Da, respectively)
 
 	//constructor
 	dead_end_branch();
@@ -149,40 +153,25 @@ public:
 
 class Network {
 public:
-	const char* EPANET_INP;
-        
+	const char* EPANET_INP;        
 	const char* EPANET_RPT;
-
-	const char* WUDESIM_INP;
-	
+	const char* WUDESIM_INP;	
 	const char* WUDESIM_RPT;
 
-	vector<all_links> pipes;
-
-	vector<all_nodes> junctions;
-
-	vector<string> demand_sources;
-
-	vector<string> quality_sources;
-
-	vector<string> tanks;
-
-	vector<string> reservoirs;
-
-	vector<all_pumps> pumps;
-
-	vector<all_valves> valves;
-
-	all_options options;
-
-	dead_end_options DE_options;
-
-	all_times times;
-
-	all_reactions reactions;
-
+	vector<all_links>       pipes;
+	vector<all_nodes>       junctions;
+	vector<string>          demand_sources;
+	vector<string>          quality_sources;
+	vector<string>          tanks;
+	vector<string>          reservoirs;
+	vector<all_pumps>       pumps;
+	vector<all_valves>      valves;
+	all_options             options;
+	dead_end_options        DE_options;
+	all_times               times;
+	all_reactions           reactions;
 	vector<dead_end_branch> DE_branches;
+	vector<string>          XJunctions;
 
-	vector<string> XJunctions;
-
+	~Network();
 };

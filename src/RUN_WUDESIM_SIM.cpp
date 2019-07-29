@@ -70,7 +70,7 @@ int RUN_WUDESIM_SIM(Network* net, vector<double> DE_branch_simulation)
 
 		int branch = DE_branch_simulation[bb];
 
-		WRITE_OUT_MSG("	o	Simulating Dead-End Branch no." + toString(branch + 1));
+		WRITE_LOG_MSG("	o	Simulating Dead-End Branch no." + toString(branch + 1));
 
 		// Get number of branches
 		int N_pipes = net->DE_branches[branch].branch_size;
@@ -135,9 +135,9 @@ int RUN_WUDESIM_SIM(Network* net, vector<double> DE_branch_simulation)
 
 			// Read correction factors
 			N_seg_corr[DeadEnd] = net->DE_branches[branch].N_segment[DeadEnd];
-			Flow_Corr[DeadEnd] = net->DE_branches[branch].Correction_factors[DeadEnd][0];
-			Disp_Corr[DeadEnd] = net->DE_branches[branch].Correction_factors[DeadEnd][1];
-			Kw_Corr[DeadEnd] = net->DE_branches[branch].Correction_factors[DeadEnd][2];
+			Flow_Corr[DeadEnd]  = net->DE_branches[branch].Flow_Correction_factor[DeadEnd];
+			Disp_Corr[DeadEnd]  = net->DE_branches[branch].Disp_Correction_factor[DeadEnd];
+			Kw_Corr[DeadEnd]    = net->DE_branches[branch].Rw_Correction_factor[DeadEnd];
 
 			// Flow velocity
 			for (int i = 0; i < N_steps_act; ++i) {
@@ -179,7 +179,7 @@ int RUN_WUDESIM_SIM(Network* net, vector<double> DE_branch_simulation)
 		dt_q = dt_h_act * 3600 / Nqsteps;                     //Actual quality time step(sec)
 
 		if (dt_q != dt_q_EPANET) {
-			WRITE_OUT_MSG("			Water Quality Step Reduced to " + toString(dt_q) + "s");
+			WRITE_LOG_MSG("			Water Quality Step Reduced to " + toString(dt_q) + "s");
 		}
 
 		// Space discretaztion

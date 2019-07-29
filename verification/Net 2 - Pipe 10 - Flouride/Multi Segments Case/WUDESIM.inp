@@ -10,6 +10,10 @@ CORRECTION FACTORS No
 CONN DEM 0.1
 ;Segment length (same length units as EPANET input file)
 SEG LENGTH 450
+;Select which correction factors to calculate (Y:Yes / N:No)
+FLOW CORR Yes
+DISP CORR Yes
+Rw CORR Yes
 
 [STOC_DEMANDS]
 ;Use stochastically generated flow demands with Poisson Pulses based on lognormaly distributed pulse intensities and durations? (Y:Yes / N:No)

@@ -82,7 +82,6 @@ int FIND_DE_BRANCHES(Network* net)
 	int N_tanks   = net->tanks.size();
 	int N_reserv  = net->reservoirs.size();
 
-
 	for (int i = 0;i < N_pipes;i++) {
 		
 		// Condition 1: Check if one of the two nodes is connected to only one pipe

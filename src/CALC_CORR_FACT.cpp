@@ -36,7 +36,9 @@ int CALC_CORR_FACT(Network* net) {
 
 		// Initialize correction factors
 		net->DE_branches[branch].N_segment.resize(N_pipes, 1);
-		net->DE_branches[branch].Correction_factors.resize(N_pipes, vector<double>(3, 1.));
+		net->DE_branches[branch].Flow_Correction_factor.resize(N_pipes, 1.);
+		net->DE_branches[branch].Disp_Correction_factor.resize(N_pipes, 1.);
+		net->DE_branches[branch].Rw_Correction_factor.resize(N_pipes, 1.);
 
 		for (int DeadEnd = (N_pipes - 1); DeadEnd >= 0; DeadEnd--) {
 
@@ -55,7 +57,6 @@ int CALC_CORR_FACT(Network* net) {
 					vector<double> Q_out = net->DE_branches[branch].pipe_flow_EPANET[DeadEnd - 1];
 					Qout_avg = avrg(Q_out);
 				}
-
 				
 				// Calculate dummy number of segments
 				if (Corr_Fact_fl == 1) {      //flow-based correction
@@ -76,7 +77,7 @@ int CALC_CORR_FACT(Network* net) {
 					for (double i = 1; i <= N_seg_dum ; ++i) {
 						Flow_Corr = Flow_Corr + pow(N_seg_dum - i + 1., -1.);
 						Disp_Corr = Disp_Corr + pow(N_seg_dum - i + 1., 2.);
-						Kw_Corr   = Kw_Corr + pow(N_seg_dum - i + 1., -(2. / 3.));
+						Kw_Corr   = Kw_Corr   + pow(N_seg_dum - i + 1., -(2. / 3.));
 					}
 
 					N_seg_corr = N_seg_dum;
@@ -92,10 +93,10 @@ int CALC_CORR_FACT(Network* net) {
 				}
 			}
 
-			net->DE_branches[branch].N_segment[DeadEnd]             = N_seg_corr;
-			if (net->DE_options.flow_corr_fl) { net->DE_branches[branch].Correction_factors[DeadEnd][0] = Flow_Corr; }
-			if (net->DE_options.disp_corr_fl) {	net->DE_branches[branch].Correction_factors[DeadEnd][1] = Disp_Corr; }
-			if (net->DE_options.Rw_corr_fl) { net->DE_branches[branch].Correction_factors[DeadEnd][2] = Kw_Corr; }
+			net->DE_branches[branch].N_segment[DeadEnd] = N_seg_corr;
+			if (net->DE_options.flow_corr_fl) { net->DE_branches[branch].Flow_Correction_factor[DeadEnd] = Flow_Corr; }
+			if (net->DE_options.disp_corr_fl) {	net->DE_branches[branch].Disp_Correction_factor[DeadEnd] = Disp_Corr; }
+			if (net->DE_options.Rw_corr_fl) { net->DE_branches[branch].Rw_Correction_factor[DeadEnd]     = Kw_Corr; }
 		}
 	}
 

@@ -16,7 +16,6 @@ void write_DE_ids(Network*);
 void write_DE_Properties(Network*);
 void write_stoc_dems(Network*);
 void write_WUDESIM_rpt(Network*);
-void WRITE_OUT_MSG(string);
 
 // define template class to convert int and double to string
 template<class T>

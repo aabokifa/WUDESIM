@@ -1,0 +1,132 @@
+****************	FULL WUDESIM Simulation Started!	****************
+
+o	Processing EPANET input file  ...
+o	Processing EPANET input file was successful!
+
+o	Finding dead-end branches ...
+o	Found 70 dead-end branches in the network
+o	IDs of Dead End Pipes were written to DE_Pipe_ID.out
+
+o	Running EPANET simulation...
+o	Running EPANET was successful!
+
+o	Evaluating properties of dead-end pipes ...
+o	Evaluating properties of dead-end pipes was successful!
+o	Properties of Dead End Pipes were written to DE_Properties.out
+
+o	Processing WUDESIM input file ...
+	o	Solute  dispersion turned ON using Taylor's coefficients 
+	o	Correction factors turned ON with a segment spacing of 200 m
+	o	Stochastic demands turned OFF 
+o	Processing WUDESIM input file was successful!
+
+o	Starting WUDESIM water quality simulations!
+	o	Simulating Dead-End Branch no.1
+	o	Simulating Dead-End Branch no.2
+	o	Simulating Dead-End Branch no.3
+	o	Simulating Dead-End Branch no.4
+	o	Simulating Dead-End Branch no.5
+	o	Simulating Dead-End Branch no.6
+	o	Simulating Dead-End Branch no.7
+			Water Quality Step Reduced to 225s
+	o	Simulating Dead-End Branch no.8
+			Water Quality Step Reduced to 257.143s
+	o	Simulating Dead-End Branch no.9
+			Water Quality Step Reduced to 42.3529s
+	o	Simulating Dead-End Branch no.10
+	o	Simulating Dead-End Branch no.11
+			Water Quality Step Reduced to 22.5s
+	o	Simulating Dead-End Branch no.12
+	o	Simulating Dead-End Branch no.13
+			Water Quality Step Reduced to 76.5957s
+	o	Simulating Dead-End Branch no.14
+	o	Simulating Dead-End Branch no.15
+			Water Quality Step Reduced to 100s
+	o	Simulating Dead-End Branch no.16
+			Water Quality Step Reduced to 240s
+	o	Simulating Dead-End Branch no.17
+			Water Quality Step Reduced to 73.4694s
+	o	Simulating Dead-End Branch no.18
+	o	Simulating Dead-End Branch no.19
+	o	Simulating Dead-End Branch no.20
+			Water Quality Step Reduced to 28.3465s
+	o	Simulating Dead-End Branch no.21
+			Water Quality Step Reduced to 80s
+	o	Simulating Dead-End Branch no.22
+			Water Quality Step Reduced to 9.89011s
+	o	Simulating Dead-End Branch no.23
+	o	Simulating Dead-End Branch no.24
+			Water Quality Step Reduced to 34.2857s
+	o	Simulating Dead-End Branch no.25
+			Water Quality Step Reduced to 32.1429s
+	o	Simulating Dead-End Branch no.26
+			Water Quality Step Reduced to 163.636s
+	o	Simulating Dead-End Branch no.27
+	o	Simulating Dead-End Branch no.28
+	o	Simulating Dead-End Branch no.29
+			Water Quality Step Reduced to 6.72897s
+	o	Simulating Dead-End Branch no.30
+	o	Simulating Dead-End Branch no.31
+			Water Quality Step Reduced to 92.3077s
+	o	Simulating Dead-End Branch no.32
+			Water Quality Step Reduced to 124.138s
+	o	Simulating Dead-End Branch no.33
+			Water Quality Step Reduced to 29.2683s
+	o	Simulating Dead-End Branch no.34
+	o	Simulating Dead-End Branch no.35
+			Water Quality Step Reduced to 128.571s
+	o	Simulating Dead-End Branch no.36
+			Water Quality Step Reduced to 83.7209s
+	o	Simulating Dead-End Branch no.37
+	o	Simulating Dead-End Branch no.38
+	o	Simulating Dead-End Branch no.39
+	o	Simulating Dead-End Branch no.40
+	o	Simulating Dead-End Branch no.41
+	o	Simulating Dead-End Branch no.42
+	o	Simulating Dead-End Branch no.43
+			Water Quality Step Reduced to 24s
+	o	Simulating Dead-End Branch no.44
+	o	Simulating Dead-End Branch no.45
+	o	Simulating Dead-End Branch no.46
+			Water Quality Step Reduced to 225s
+	o	Simulating Dead-End Branch no.47
+	o	Simulating Dead-End Branch no.48
+	o	Simulating Dead-End Branch no.49
+	o	Simulating Dead-End Branch no.50
+	o	Simulating Dead-End Branch no.51
+	o	Simulating Dead-End Branch no.52
+	o	Simulating Dead-End Branch no.53
+	o	Simulating Dead-End Branch no.54
+			Water Quality Step Reduced to 41.8605s
+	o	Simulating Dead-End Branch no.55
+	o	Simulating Dead-End Branch no.56
+	o	Simulating Dead-End Branch no.57
+			Water Quality Step Reduced to 26.2774s
+	o	Simulating Dead-End Branch no.58
+	o	Simulating Dead-End Branch no.59
+			Water Quality Step Reduced to 17.3077s
+	o	Simulating Dead-End Branch no.60
+	o	Simulating Dead-End Branch no.61
+			Water Quality Step Reduced to 60s
+	o	Simulating Dead-End Branch no.62
+			Water Quality Step Reduced to 102.857s
+	o	Simulating Dead-End Branch no.63
+			Water Quality Step Reduced to 276.923s
+	o	Simulating Dead-End Branch no.64
+	o	Simulating Dead-End Branch no.65
+	o	Simulating Dead-End Branch no.66
+	o	Simulating Dead-End Branch no.67
+			Water Quality Step Reduced to 200s
+	o	Simulating Dead-End Branch no.68
+			Water Quality Step Reduced to 276.923s
+	o	Simulating Dead-End Branch no.69
+	o	Simulating Dead-End Branch no.70
+			Water Quality Step Reduced to 116.129s
+o	WUDESIM simulations were successful!
+
+o	Writing WUDESIM Report file ...
+o	WUDESIM Report file was written successfully!
+
+*****************************************************************************
+WUDESIM finished successfuly!
+WUDESIM execution time: 35677 ms

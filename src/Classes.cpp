@@ -87,7 +87,10 @@ dead_end_options::dead_end_options() {
 	s1 = 0;
 	s2 = 0;
 	avg_int = 0;
+	N_steps_WUDESIM = 0;
 
 	Dispersion_fl = 1;
+}
 
+Network::~Network() {
 }

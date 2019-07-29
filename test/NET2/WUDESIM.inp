@@ -9,7 +9,7 @@ CORRECTION FACTORS Spacing
 ;Connection demand (same demand units as EPANET input file)
 CONN DEM 0.1
 ;Segment length (same length units as EPANET input file)
-SEG LENGTH 150
+SEG LENGTH 200
 ;Select which correction factors to calculate (Y:Yes / N:No)
 FLOW CORR Yes
 DISP CORR Yes
@@ -17,7 +17,7 @@ Rw CORR Yes
 
 [STOC_DEMANDS]
 ;Use stochastically generated flow demands with Poisson Pulses based on lognormaly distributed pulse intensities and durations? (Y:Yes / N:No)
-STOCHASTIC DEMANDS No
+STOCHASTIC DEMANDS Yes
 ;Parameters: 
 ;mean pulse duration ln(s):
 u1	3.15
@@ -28,11 +28,11 @@ s1	1.17
 ;std deviation of pulse lntensity (l/s):
 s2	0.72
 ;Pulse averaging interval (sec):
-AVERAGING INTERVAL 300
+AVERAGING INTERVAL 600
 
 [WUDESIM_OUTPUT]
-;Choose whether or not to simulate all the dead-end branches in the netwrok (Y:Yes / N:No)
-SIM ALL Yes 
+;Choose whether or not to simulate all the dead-end branches in the netwrok
+SIM ALL Yes
 ;Enter the IDs of the Dead-End branches you wish to simulate
 Branches 1
 

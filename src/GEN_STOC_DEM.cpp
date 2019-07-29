@@ -39,9 +39,10 @@ int GEN_STOC_DEM(Network* net, vector<double> DE_branch_simulation)
 	double mean_V  = exp(u1 + u2) / 1000;	  // Mean pulse volume(m3)
 
 	// Calculate new flow profile parameters
-	double dt_h_WUDESIM = net->DE_options.avg_int;		// Averaging interval (sec)
-	int N_avg_int       = dt_h_EPANET / dt_h_WUDESIM;   // Number of averaging intervals per EPANET hydraulic step
-	int N_steps_WUDESIM = N_steps_EPANET * N_avg_int;   // Number of WUDESIM hydraulic steps	
+	double dt_h_WUDESIM             = net->DE_options.avg_int;		// Averaging interval (sec)
+	int N_avg_int                   = dt_h_EPANET / dt_h_WUDESIM;   // Number of averaging intervals per EPANET hydraulic step
+	int N_steps_WUDESIM             = N_steps_EPANET * N_avg_int;   // Number of WUDESIM hydraulic steps	
+	net->DE_options.N_steps_WUDESIM = N_steps_WUDESIM;              // Store information to the network
 
 	for (int bb = 0; bb < DE_branch_simulation.size(); bb++) {
 

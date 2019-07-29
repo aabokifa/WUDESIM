@@ -1,9 +1,8 @@
-Deadend pipe IDs:
-DE Branch No. 1 :
-P7
-P6
-P5
-P4
-P3
-P2
-P1
+Branch_No     Pipe_ID       
+1             P1            
+1             P2            
+1             P3            
+1             P4            
+1             P5            
+1             P6            
+1             P7            
