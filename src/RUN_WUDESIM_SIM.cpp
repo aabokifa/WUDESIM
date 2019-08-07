@@ -70,7 +70,7 @@ int RUN_WUDESIM_SIM(Network* net, vector<double> DE_branch_simulation)
 
 		int branch = DE_branch_simulation[bb];
 
-		WRITE_LOG_MSG("	o	Simulating Dead-End Branch no." + toString(branch + 1));
+		WRITE_LOG_MSG("	o	Simulating Dead-End Branch " + net->DE_branches[branch].branch_id);
 
 		// Get number of branches
 		int N_pipes = net->DE_branches[branch].branch_size;
@@ -103,12 +103,23 @@ int RUN_WUDESIM_SIM(Network* net, vector<double> DE_branch_simulation)
 		vector<vector<double>> N(N_pipes, vector<double>(N_steps_act, 0.));
 		vector<vector<double>> dx(N_pipes, vector<double>(N_steps_act, 0.));
 
+		// Reynolds number 
+		net->DE_branches[branch].Reynolds_WUDESIM.resize(N_pipes, vector<double>(N_steps_act, 0.));
+		net->DE_branches[branch].Reynolds_WUDESIM_WRITE.resize(N_pipes, vector<double>(N_steps_EPANET, 0));
+
+		// Residence time
+		net->DE_branches[branch].Res_time_WUDESIM.resize(N_pipes, vector<double>(N_steps_act, 0.));
+		net->DE_branches[branch].Res_time_WUDESIM_WRITE.resize(N_pipes, vector<double>(N_steps_EPANET, 0));
+
 		// Dispersion coefficient and Peclet number
 		vector<vector<double>> E_disp(N_pipes, vector<double>(N_steps_act, 0.));
-		net->DE_branches[branch].Peclet.resize(N_pipes, vector<double>(N_steps_act, 0.));
+		net->DE_branches[branch].Peclet_WUDESIM.resize(N_pipes, vector<double>(N_steps_act, 0.));
+		net->DE_branches[branch].Peclet_WUDESIM_WRITE.resize(N_pipes, vector<double>(N_steps_EPANET, 0));
+
 
 		// Initialize Terminal WUDESIM concentration
 		net->DE_branches[branch].terminal_C_WUDESIM.resize(N_pipes, vector<double>(N_steps_act, 0.));
+		net->DE_branches[branch].terminal_C_WUDESIM_WRITE.resize(N_pipes, vector<double>(N_steps_EPANET, 0.));
 
 		//Calculate decay coefficients
 		vector<vector<double>> Sh(N_pipes, vector<double>(N_steps_act, 0.));
@@ -124,7 +135,7 @@ int RUN_WUDESIM_SIM(Network* net, vector<double> DE_branch_simulation)
 				pipe_flow[DeadEnd] = net->DE_branches[branch].pipe_flow_EPANET[DeadEnd];
 			}
 			else {
-				pipe_flow[DeadEnd] = net->DE_branches[branch].pipe_flow_WUDESIM[DeadEnd];
+				pipe_flow[DeadEnd] = net->DE_branches[branch].pipe_flow_STOC[DeadEnd];
 			}
 
 			// Pipe data
@@ -145,14 +156,19 @@ int RUN_WUDESIM_SIM(Network* net, vector<double> DE_branch_simulation)
 				u[DeadEnd][i] = pipe_flow[DeadEnd][i] / Ap[DeadEnd];   //Actual Flow velocity(m / sec)
 				u_corr[DeadEnd][i] = u[DeadEnd][i] * Flow_Corr[DeadEnd];    //Corrected Flow velocity(m / sec)
 
-				if (Lt[DeadEnd] / u_corr[DeadEnd][i] > 3600. * 24. * 7.) { u_corr[DeadEnd][i] = 0; } //Consider stagnant if corrected residence time is more than 24 hrs
+				// Calculate corrected Reynolds number and Residence time
+				net->DE_branches[branch].Reynolds_WUDESIM[DeadEnd][i] = u_corr[DeadEnd][i] * dp[DeadEnd] / viscosity;
+				if (u_corr[DeadEnd][i] != 0) {
+					net->DE_branches[branch].Res_time_WUDESIM[DeadEnd][i] = Lt[DeadEnd] / u_corr[DeadEnd][i];
+				}
 
-				Re[DeadEnd][i] = u[DeadEnd][i] * dp[DeadEnd] / viscosity;         //Calculate Reynolds Number
-
+				//Calculate Reynolds Number without correction
+				Re[DeadEnd][i] = u[DeadEnd][i] * dp[DeadEnd] / viscosity;
 			}
 
 			//Read terminal concentration from EPANET for the first time step
-			net->DE_branches[branch].terminal_C_WUDESIM[DeadEnd][0] = net->DE_branches[branch].terminal_C_EPANET[DeadEnd][0];
+			net->DE_branches[branch].terminal_C_WUDESIM[DeadEnd][0]       = net->DE_branches[branch].terminal_C_EPANET[DeadEnd][0];
+			net->DE_branches[branch].terminal_C_WUDESIM_WRITE[DeadEnd][0] = net->DE_branches[branch].terminal_C_EPANET[DeadEnd][0];
 
 		}
 
@@ -161,6 +177,11 @@ int RUN_WUDESIM_SIM(Network* net, vector<double> DE_branch_simulation)
 		//Check whether the user selected quality time step is sufficient for max flow event in shortest pipe in the branch
 
 		for (int DeadEnd = (N_pipes - 1); DeadEnd >= 0; DeadEnd--) {
+
+			// Check if flow velocity is too low
+			for (int i = 0; i < N_steps_act; ++i) {
+				if (Lt[DeadEnd] / u_corr[DeadEnd][i] > 3600. * 24. * 7.) { u_corr[DeadEnd][i] = 0; } //Consider stagnant if corrected residence time is more than 24 hrs
+			}
 
 			double u_max = abs(*max_element(u_corr[DeadEnd].begin(), u_corr[DeadEnd].end()));     //maximum flow velocity(m / sec)
 			double dx_max = u_max * dt_q;              //maximum delta x(m)
@@ -287,7 +308,7 @@ int RUN_WUDESIM_SIM(Network* net, vector<double> DE_branch_simulation)
 					}
 
 					// Calculate Peclet number
-					net->DE_branches[branch].Peclet[DeadEnd][Hstep] = u[DeadEnd][Hstep] * Lt[DeadEnd] / E_disp[DeadEnd][Hstep];
+					net->DE_branches[branch].Peclet_WUDESIM[DeadEnd][Hstep] = u[DeadEnd][Hstep] * Lt[DeadEnd] / E_disp[DeadEnd][Hstep];
 
 				} // loop for hydraulic steps
 
@@ -301,7 +322,7 @@ int RUN_WUDESIM_SIM(Network* net, vector<double> DE_branch_simulation)
 
 			for (int i = 0; i < N_steps_act; ++i) {
 
-				double Reyn = Re[0][i] * Flow_Corr[DeadEnd];
+				double Reyn = Re[0][i];// *Flow_Corr[DeadEnd];
 
 				//Sherwood Numbr
 				if (Reyn >= 2300) {
@@ -432,11 +453,11 @@ int RUN_WUDESIM_SIM(Network* net, vector<double> DE_branch_simulation)
 								//First order bulk reaction
 								C_adv[DeadEnd][i] *= exp(Kb * dt_q);
 							}
-							else { //nth order bulk reaction
+							else { //nth order bulk reaction: dc/dt = Kb*C^n_b
 								C_adv[DeadEnd][i] *= (1 + (n_b - 1) * Kb * pow(C_adv[DeadEnd][i], n_b - 1) * dt_q);
 							}
 						}
-						else if (n_b > 0) { // dC/dt=Kb*(C_L-C)*C^(n_b-1)
+						else if (n_b > 0) { // limited reaction kinteic: dC/dt=Kb*(C_L-C)*C^(n_b-1)
 							//Solve via RK4
 							double y1 = C_adv[DeadEnd][i];
 							double k1 = Kb * (C_L - y1) * pow(y1, n_b - 1);
@@ -487,25 +508,24 @@ int RUN_WUDESIM_SIM(Network* net, vector<double> DE_branch_simulation)
 						double Rw;
 						if (n_w == 1) {        //First order wall reaction
 
+							// include correction factor only for laminar flow
 							if (Re[DeadEnd][Hstep] < 2300) {
-								// include correction factor only for laminar flow
 								Rw = (abs(Kw) * Kf[DeadEnd][Hstep]) / ((abs(Kw) + Kf[DeadEnd][Hstep]) * dp[DeadEnd] / 4.) * Kw_Corr[DeadEnd];
-							}
-							
+							}							
 							else
 							{
 								Rw = (abs(Kw) * Kf[DeadEnd][Hstep]) / ((abs(Kw) + Kf[DeadEnd][Hstep]) * dp[DeadEnd] / 4.);
 							}
 
+							// check if decay or growth kinetics
 							if (Kw < 0) {
 								C_adv[DeadEnd][i] *= exp(-Rw * dt_q);
 							}
-
 							else if (Kw > 0) {
 								C_adv[DeadEnd][i] *= exp(Rw * dt_q);
 							}
 						}
-						else if (n_w == 0) {            // Zeroth order wall reaction
+						else if (n_w == 0) {    // Zeroth order wall reaction
 							Rw = (4 * Kw / dp[DeadEnd]) / 1000;  // Kw/rh (mg/m3/sec --> mg/L/sec)
 							C_adv[DeadEnd][i] += Rw * dt_q;
 						}
@@ -689,6 +709,57 @@ int RUN_WUDESIM_SIM(Network* net, vector<double> DE_branch_simulation)
 			}
 
 		} // Loop for hydraulic time steps
+
+		// Store the terminal concentrations simulated by WUDESIM at each EPANET timestep
+		for (int DeadEnd = (net->DE_branches[branch].branch_size - 1); DeadEnd >= 0; DeadEnd--) {
+
+			if (net->DE_options.Stoc_dem_fl) {
+
+				// Stochastic demand time steps
+				int kk = 0;
+
+				// Set initial condition
+				net->DE_branches[branch].Peclet_WUDESIM_WRITE[DeadEnd][0]   = net->DE_branches[branch].Peclet_WUDESIM[DeadEnd][kk];
+				net->DE_branches[branch].Reynolds_WUDESIM_WRITE[DeadEnd][0] = net->DE_branches[branch].Reynolds_WUDESIM[DeadEnd][kk];
+				net->DE_branches[branch].Res_time_WUDESIM_WRITE[DeadEnd][0] = net->DE_branches[branch].Res_time_WUDESIM[DeadEnd][kk];
+
+				// Step through EPANET steps
+				for (int epanet_step = 1; epanet_step < N_steps_EPANET; ++epanet_step) {					
+
+					// Create dummy peclet number to calculate the average over EPANET steps
+					vector<double> Peclet_dummy(N_avg_int, 0.);
+					vector<double> Reynolds_dummy(N_avg_int, 0.);
+					vector<double> Res_time_dummy(N_avg_int, 0.);
+
+					// Step through stochastic demand steps within each EPANET step
+					for (int interv = 0; interv < N_avg_int; ++interv) {
+
+						++kk;
+
+						// Store the dummy Peclet number
+						Peclet_dummy[interv]   = net->DE_branches[branch].Peclet_WUDESIM[DeadEnd][kk];
+						Reynolds_dummy[interv] = net->DE_branches[branch].Reynolds_WUDESIM[DeadEnd][kk];
+						Res_time_dummy[interv] = net->DE_branches[branch].Res_time_WUDESIM[DeadEnd][kk];
+
+					}
+
+					// Calculate the average peclet number within the EPANET step
+					net->DE_branches[branch].Peclet_WUDESIM_WRITE[DeadEnd][epanet_step]   = avrg(Peclet_dummy);
+					net->DE_branches[branch].Reynolds_WUDESIM_WRITE[DeadEnd][epanet_step] = avrg(Reynolds_dummy);
+					net->DE_branches[branch].Res_time_WUDESIM_WRITE[DeadEnd][epanet_step] = avrg(Res_time_dummy);
+
+					// Store WUDESIM concentration directly at the end of each EPANET step
+					net->DE_branches[branch].terminal_C_WUDESIM_WRITE[DeadEnd][epanet_step] = net->DE_branches[branch].terminal_C_WUDESIM[DeadEnd][kk];
+				}
+			}
+			else {
+				net->DE_branches[branch].terminal_C_WUDESIM_WRITE[DeadEnd] = net->DE_branches[branch].terminal_C_WUDESIM[DeadEnd];
+				net->DE_branches[branch].Peclet_WUDESIM_WRITE[DeadEnd]     = net->DE_branches[branch].Peclet_WUDESIM[DeadEnd];
+				net->DE_branches[branch].Reynolds_WUDESIM_WRITE[DeadEnd]   = net->DE_branches[branch].Reynolds_WUDESIM[DeadEnd];
+				net->DE_branches[branch].Res_time_WUDESIM_WRITE[DeadEnd]   = net->DE_branches[branch].Res_time_WUDESIM[DeadEnd];
+			}
+		}
+
 
 	} // Loop for dead-end branches
 

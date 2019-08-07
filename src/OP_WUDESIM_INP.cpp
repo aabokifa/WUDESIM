@@ -229,6 +229,7 @@ int OP_WUDESIM_INP(Network* net) {
 		istringstream iss(WUDESIM_rpt_data[i]);
 		string dummy;
 		int branch_no = 0;
+		char dum_char;
 
 		// Read simulate all flag
 		if (find_str("SIM ALL", WUDESIM_rpt_data[i])) {
@@ -249,7 +250,12 @@ int OP_WUDESIM_INP(Network* net) {
 			iss >> dummy;
 
 			while (!iss.eof()) {
-				iss >> branch_no;
+
+				iss >> dummy;
+
+				stringstream stream(dummy);
+				stream >> dum_char >> branch_no;
+
 				if (
 					// check branch no is not zero
 					(branch_no != 0) && 

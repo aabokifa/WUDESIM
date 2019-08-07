@@ -1,7 +1,5 @@
-Branch_No     Pipe_ID       
-1             8             
-1             10            
-2             35            
-2             36            
-3             39            
-4             41            
+Branch_ID     Branch_Size   Pipe_IDs      
+B1            2             8             10            
+B2            2             35            36            
+B3            1             39            
+B4            1             41            

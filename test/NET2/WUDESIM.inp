@@ -5,7 +5,7 @@ DISPERSION COEFF Taylor
 
 [CORR_FACTS]
 ;Choose how correction factors for the spatial distribution of flow demands are calculated: (N:No correction/ F:Flow-based correction/ S:Spacing-based correction) 
-CORRECTION FACTORS Spacing
+CORRECTION FACTORS No
 ;Connection demand (same demand units as EPANET input file)
 CONN DEM 0.1
 ;Segment length (same length units as EPANET input file)
@@ -17,7 +17,7 @@ Rw CORR Yes
 
 [STOC_DEMANDS]
 ;Use stochastically generated flow demands with Poisson Pulses based on lognormaly distributed pulse intensities and durations? (Y:Yes / N:No)
-STOCHASTIC DEMANDS Yes
+STOCHASTIC DEMANDS No
 ;Parameters: 
 ;mean pulse duration ln(s):
 u1	3.15

@@ -135,11 +135,12 @@ int FIND_DE_BRANCHES(Network* net)
 
 
 		net->DE_branches.resize(N_branches);
+		net->DE_branches[branch].branch_id = ("B" + toString(branch + 1));
 
 		net->DE_branches[branch].pipe_id.push_back(net->pipes[i].id);
 		net->DE_branches[branch].pipe_index.push_back(i);
 		net->DE_branches[branch].branch_size++;
-				
+
 		//Now check to see if preceding pipes are to be added to the branch
 		if (other_node_conn == 2) {
 			

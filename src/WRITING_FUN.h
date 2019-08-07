@@ -13,6 +13,7 @@ Date:        10/25/2016
 #include "Classes.h"
 
 void write_DE_ids(Network*);
+void write_EPANET_rpt(Network*);
 void write_DE_Properties(Network*);
 void write_stoc_dems(Network*);
 void write_WUDESIM_rpt(Network*);

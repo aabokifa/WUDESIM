@@ -34,13 +34,19 @@ int RUN_EPANET_SIM(Network* net) {
 	int N_branches  = net->DE_branches.size();	
 	
 	for (int branch = 0;branch < N_branches;branch++) {
-
+		
 		int n_rows    = net->DE_branches[branch].branch_size;
 		int n_columns = net->times.N_steps;
 
+		// Flow/demand
 		net->DE_branches[branch].pipe_flow_EPANET.resize(n_rows, vector<double>(n_columns, 0.));
+		net->DE_branches[branch].node_demand_EPANET.resize(n_rows, vector<double>(n_columns, 0.));
+
+		// Boundary/terminal concentrations
 		net->DE_branches[branch].boundary_C_EPANET.resize(n_rows, vector<double>(n_columns, 0.));
 		net->DE_branches[branch].terminal_C_EPANET.resize(n_rows, vector<double>(n_columns, 0.));
+
+		// Junction IDs
 		net->DE_branches[branch].terminal_id.resize(n_rows);
 		net->DE_branches[branch].bound_id.resize(n_rows);
 	}	
@@ -93,6 +99,7 @@ int RUN_EPANET_SIM(Network* net) {
 		
 		ENnextH(&tstep);
 	} while (tstep > 0);
+
 	ENcloseH();
 	ENsolveH(); // A complete hydraulic simulation is required before running a WQ simulation
 
@@ -170,11 +177,6 @@ int RUN_EPANET_SIM(Network* net) {
 	} while (qstep > 0);
 	ENcloseQ();	
 	ENsolveQ();
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	// Save report file and close EPANET
-	ENreport();
-	ENclose();
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -190,6 +192,25 @@ int RUN_EPANET_SIM(Network* net) {
 
 				//Correct negative flows
 				if (net->DE_branches[branch].pipe_flow_EPANET[pipe][r_step] < 0) { net->DE_branches[branch].pipe_flow_EPANET[pipe][r_step] *= -1; }
+			}
+		}
+	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	// Caclulate EPANET nodal demand
+
+	for (int branch = 0; branch < N_branches; branch++) {
+
+		for (int DeadEnd = 0; DeadEnd <= (net->DE_branches[branch].branch_size - 1); DeadEnd++) {
+
+			if (DeadEnd == 0) {
+				net->DE_branches[branch].node_demand_EPANET[DeadEnd] = net->DE_branches[branch].pipe_flow_EPANET[DeadEnd];
+			}
+			else {
+				for (int i = 0; i < net->times.N_steps; i++) {
+					net->DE_branches[branch].node_demand_EPANET[DeadEnd][i] = net->DE_branches[branch].pipe_flow_EPANET[DeadEnd][i] - net->DE_branches[branch].pipe_flow_EPANET[DeadEnd - 1][i];
+				}
 			}
 		}
 	}

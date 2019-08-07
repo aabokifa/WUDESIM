@@ -49,8 +49,8 @@ int CALC_DE_PROPERTIES(Network* net) {
 		int N_pipes = net->DE_branches[branch].branch_size;
 
 		// Initialize property vectors
-		net->DE_branches[branch].Reynolds.resize(N_pipes, vector<double>(N_steps_EPANET, 0.));
-		net->DE_branches[branch].Res_time.resize(N_pipes, vector<double>(N_steps_EPANET, 0.));
+		net->DE_branches[branch].Reynolds_EPANET.resize(N_pipes, vector<double>(N_steps_EPANET, 0.));
+		net->DE_branches[branch].Res_time_EPANET.resize(N_pipes, vector<double>(N_steps_EPANET, 0.));
 
 		for (int DeadEnd = (N_pipes - 1); DeadEnd >= 0; DeadEnd--) {
 
@@ -73,12 +73,14 @@ int CALC_DE_PROPERTIES(Network* net) {
 
 			// Calculate Reynolds number
 			for (int i = 0; i < N_steps_EPANET; ++i) {
-				net->DE_branches[branch].Reynolds[DeadEnd][i] = u[i] * dp / viscosity;
+				net->DE_branches[branch].Reynolds_EPANET[DeadEnd][i] = u[i] * dp / viscosity;
 			}
 
 			// Calculate Residence Time
 			for (int i = 0; i < N_steps_EPANET; ++i) {
-				net->DE_branches[branch].Res_time[DeadEnd][i] = Lt / u[i];
+				if (u[i] != 0){
+					net->DE_branches[branch].Res_time_EPANET[DeadEnd][i] = Lt / u[i];
+				}
 			}
 		}
 	}

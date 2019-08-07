@@ -36,7 +36,7 @@ int GEN_STOC_DEM(Network* net, vector<double> DE_branch_simulation)
 	double s1      = net->DE_options.s1;	  //stdev pulse duration[ln(s)]
 	double u2      = net->DE_options.u2;	  //mean pulse intensity[ln(L / s)]
 	double s2      = net->DE_options.s2;	  //stdev pulse instenisty[ln(L / s)]
-	double mean_V  = exp(u1 + u2) / 1000;	  // Mean pulse volume(m3)
+	double mean_V  = exp(u1 + u2) / 1000;	  //Mean pulse volume(m3)
 
 	// Calculate new flow profile parameters
 	double dt_h_WUDESIM             = net->DE_options.avg_int;		// Averaging interval (sec)
@@ -48,16 +48,30 @@ int GEN_STOC_DEM(Network* net, vector<double> DE_branch_simulation)
 
 		int branch = DE_branch_simulation[bb];
 
+		WRITE_LOG_MSG("	o	Generating Stochastic Demand for Dead-End Branch " + net->DE_branches[branch].branch_id);
+		
+		// Initialize the stochastic flow/demand array
 		int n_rows    = net->DE_branches[branch].branch_size;
 		int n_columns = N_steps_WUDESIM;
-		net->DE_branches[branch].pipe_flow_WUDESIM.resize(n_rows, vector<double>(n_columns, 0.));
+		
+		net->DE_branches[branch].pipe_flow_STOC.resize(n_rows, vector<double>(n_columns, 0.));
+		net->DE_branches[branch].node_demand_STOC.resize(n_rows, vector<double>(n_columns, 0.));
 
-		for (int DeadEnd = (net->DE_branches[branch].branch_size - 1); DeadEnd >= 0; DeadEnd--) {
+		for (int DeadEnd = 0; DeadEnd <= (net->DE_branches[branch].branch_size - 1); DeadEnd++) { //start the loop from the terminal link to conserve mass balance
 
-			vector<double> flow_inp = net->DE_branches[branch].pipe_flow_EPANET[DeadEnd];
+			// get demand from EPANET
+			vector<double> demand_EPANET(N_steps_EPANET,0);
+			if (DeadEnd == 0) {
+				demand_EPANET = net->DE_branches[branch].pipe_flow_EPANET[DeadEnd];				
+			}
+			else {
+				for (int i = 0; i < N_steps_EPANET; i++) {
+					demand_EPANET[i] = net->DE_branches[branch].pipe_flow_EPANET[DeadEnd][i] - net->DE_branches[branch].pipe_flow_EPANET[DeadEnd - 1][i];
+				}				
+			}				 
 			
 			// Calculate pulse arrival rate (Lambda)
-			vector<double> L = flow_inp;
+			vector<double> L = demand_EPANET;
 			for (int i = 0; i < N_steps_EPANET; ++i) { L[i] /= mean_V; }
 
 			// Calculate number of pulses for each step
@@ -93,7 +107,7 @@ int GEN_STOC_DEM(Network* net, vector<double> DE_branch_simulation)
 				for (int pulse = 0; pulse < N_pulses[step]; pulse++) {
 					vol_sum += (D[step][pulse] * I[step][pulse]);
 				}
-				corr[step] = (vol_sum / 1000) / (flow_inp[step] * dt_h_EPANET);
+				corr[step] = (vol_sum / 1000) / (demand_EPANET[step] * dt_h_EPANET);
 				for (int pulse = 0; pulse < N_pulses[step]; pulse++) { I[step][pulse] /= corr[step]; }
 			}
 
@@ -136,19 +150,29 @@ int GEN_STOC_DEM(Network* net, vector<double> DE_branch_simulation)
 			}
 
 			// Averaging flow rates
-			vector<double> flow_act(N_steps_EPANET* N_avg_int, 0); // Averaged flows
+			vector<double> demand_WUDESIM(N_steps_EPANET* N_avg_int, 0); // Averaged flows
 			int T = 0, K = 0;
 			for (int step = 0; step < N_steps_EPANET; step++) {
 				for (int interv = 0; interv < N_avg_int; interv++) {
-					for (int i = T; i < T + dt_h_WUDESIM; i++) { flow_act[K] += Q[i]; }
-					flow_act[K] /= (dt_h_WUDESIM * 1000);
+					for (int i = T; i < T + dt_h_WUDESIM; i++) { demand_WUDESIM[K] += Q[i]; }
+					demand_WUDESIM[K] /= (dt_h_WUDESIM * 1000);
 					T += dt_h_WUDESIM;
 					K++;
 				}
 			}
 
+			// Store averaged demands
+			net->DE_branches[branch].node_demand_STOC[DeadEnd] = demand_WUDESIM;
+
 			// Store averaged flows
-			net->DE_branches[branch].pipe_flow_WUDESIM[DeadEnd] = flow_act;
+			if (DeadEnd == 0) {
+				net->DE_branches[branch].pipe_flow_STOC[DeadEnd]   = demand_WUDESIM;
+			}
+			else {
+				for (int i = 0; i < N_steps_WUDESIM; i++) {
+					net->DE_branches[branch].pipe_flow_STOC[DeadEnd][i] = net->DE_branches[branch].pipe_flow_STOC[DeadEnd - 1][i] + demand_WUDESIM[i];
+				}
+			}
 		}
 	}
 	return 0;
