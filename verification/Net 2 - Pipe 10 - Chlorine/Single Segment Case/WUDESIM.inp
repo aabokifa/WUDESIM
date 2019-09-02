@@ -1,7 +1,10 @@
 [SOL_DISPERSION]
-;Choose how the dispersion coefficient is calculated: 
-;(N: No dispersion / T: Taylor's dispersion / A: Average dispersion coefficients of Lee 2004)
-DISPERSION COEFF Taylor
+;Choose how the laminar dispersion coefficient is calculated: 
+;(N: No dispersion / T: Taylor's dispersion / L: Average dispersion coefficients of Lee 2004)
+LAMINAR DISPERSION Taylor
+;Choose how the turbulent dispersion coefficient is calculated: 
+;(N: No dispersion / T: Taylor's dispersion / S: Dispersion formula of Sattar 2014)
+TURBULENT DISPERSION Sattar
 
 [CORR_FACTS]
 ;Choose how correction factors for the spatial distribution of flow demands are calculated: (N:No correction/ F:Flow-based correction/ S:Spacing-based correction) 
@@ -13,20 +16,21 @@ SEG LENGTH 450
 ;Select which correction factors to calculate (Y:Yes / N:No)
 FLOW CORR Yes
 DISP CORR Yes
-Rw CORR Yes
+RW CORR Yes
+
 
 [STOC_DEMANDS]
 ;Use stochastically generated flow demands with Poisson Pulses based on lognormaly distributed pulse intensities and durations? (Y:Yes / N:No)
 STOCHASTIC DEMANDS No
 ;Parameters: 
-;mean pulse duration ln(s):
-u1	3.15
-;mean pulse intensity ln(l/s):
-u2	-2.57
-;std deviation of pulse duration ln(s):
-s1	1.17
-;std deviation of pulse lntensity (l/s):
-s2	0.72
+;mean pulse duration (sec):
+u1	23.33
+;std deviation of pulse duration (sec):
+s1	3.222
+;mean pulse intensity (L/sec):
+u2	0.0765
+;std deviation of pulse lntensity (L/sec):
+s2	2.054
 ;Pulse averaging interval (sec):
 AVERAGING INTERVAL 300
 
@@ -34,6 +38,6 @@ AVERAGING INTERVAL 300
 ;Choose whether or not to simulate all the dead-end branches in the netwrok
 SIM ALL Yes
 ;Enter the IDs of the Dead-End branches you wish to simulate
-Branches 1
+BRANCHES 1
 
 [END]

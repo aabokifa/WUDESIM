@@ -79,7 +79,9 @@ dead_end_options::dead_end_options() {
 	
 	flow_corr_fl = 0;
 	disp_corr_fl = 0;
-	Rw_corr_fl = 0;
+	Rw_corr_fl   = 0;
+	calc_meth_fl = 0;
+
 
 	Stoc_dem_fl     = 0;
 	u1 = 0;
@@ -89,7 +91,8 @@ dead_end_options::dead_end_options() {
 	avg_int = 0;
 	N_steps_WUDESIM = 0;
 
-	Dispersion_fl = 1;
+	LAM_Dispersion_fl = 0; // 0 = no dispersion, 1 = Taylor dispersion, 2- Lee dispersion
+	TUR_Dispersion_fl = 0; // 0 = no dispersion, 1 = Taylor dispersion, 2-5: Sattar GEP formulae 1-4 
 }
 
 Network::~Network() {

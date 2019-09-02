@@ -349,25 +349,22 @@ int DE_WRITE_EPANET_REPORT() {
 /////////////////////////////////////////////////////        GET FUNCTIONS     ////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-int DE_GET_COUNT(const int prop_idx) {
+int DE_GET_BRAN_COUNT(const int prop_idx) {
 	switch(prop_idx){
 	case DE_BRAN_COUNT:            return net.DE_branches.size();
+	}
+}
+
+int DE_GET_STEP_COUNT(const int prop_idx) {
+	switch (prop_idx) {
 	case DE_EPANET_STEP_COUNT:     return net.times.N_steps;
 	case DE_STOCHASTIC_STEP_COUNT: return net.DE_options.N_steps_WUDESIM;
 	}
 }
 
-int DE_GET_BRAN_PROPERTY(const int prop_idx, const int branch_idx) { 
+int DE_GET_BRAN_SIZE(const int prop_idx, const int branch_idx) { 
 	switch (prop_idx) {	
 	case DE_BRAN_SIZE: return net.DE_branches[branch_idx].branch_size;
-	}
-}
-
-const char* DE_GET_ID(const int prop_idx, const int branch_idx, const int pipe_idx) {
-	switch (prop_idx) {	
-	case DE_PIPE_ID: return net.DE_branches[branch_idx].pipe_id[pipe_idx].c_str();
-	case DE_NODE_ID: return net.DE_branches[branch_idx].terminal_id[pipe_idx].c_str();
-	case DE_BRAN_ID: return net.DE_branches[branch_idx].branch_id.c_str();
 	}
 }
 
@@ -378,39 +375,47 @@ double DE_GET_PIPE_PROPERTY(const int prop_idx, const int branch_idx, const int 
 	}
 }
 
-double DE_GET_PIPE_RESULT_EPANET(const int prop_idx, const int branch_idx, const int pipe_idx,const int step_idx) {
+double DE_GET_PIPE_RESULT_EPANET(const int prop_idx, const int branch_idx, const int pipe_idx,const int step) {
 	switch (prop_idx) {
-	case DE_REYNOLDS_EPANET:   return net.DE_branches[branch_idx].Reynolds_EPANET[pipe_idx][step_idx];
-	case DE_RES_TIME_EPANET:   return net.DE_branches[branch_idx].Res_time_EPANET[pipe_idx][step_idx];
-	case DE_FLOW_EPANET:       return net.DE_branches[branch_idx].pipe_flow_EPANET[pipe_idx][step_idx];
+	case DE_REYNOLDS_EPANET:   return net.DE_branches[branch_idx].Reynolds_EPANET[pipe_idx][step];
+	case DE_RES_TIME_EPANET:   return net.DE_branches[branch_idx].Res_time_EPANET[pipe_idx][step];
+	case DE_FLOW_EPANET:       return net.DE_branches[branch_idx].pipe_flow_EPANET[pipe_idx][step];
 	}	
 }
 
-double DE_GET_PIPE_RESULT_WUDESIM(const int prop_idx, const int branch_idx, const int pipe_idx, const int step_idx) {
+double DE_GET_PIPE_RESULT_WUDESIM(const int prop_idx, const int branch_idx, const int pipe_idx, const int step) {
 	switch (prop_idx) {
-	case DE_REYNOLDS_WUDESIM:        return net.DE_branches[branch_idx].Reynolds_WUDESIM_WRITE[pipe_idx][step_idx];
-	case DE_RES_TIME_WUDESIM:        return net.DE_branches[branch_idx].Res_time_WUDESIM_WRITE[pipe_idx][step_idx];
-	case DE_PECLET_WUDESIM:          return net.DE_branches[branch_idx].Peclet_WUDESIM_WRITE[pipe_idx][step_idx];
+	case DE_REYNOLDS_WUDESIM:        return net.DE_branches[branch_idx].Reynolds_WUDESIM_WRITE[pipe_idx][step];
+	case DE_RES_TIME_WUDESIM:        return net.DE_branches[branch_idx].Res_time_WUDESIM_WRITE[pipe_idx][step];
+	case DE_PECLET_WUDESIM:          return net.DE_branches[branch_idx].Peclet_WUDESIM_WRITE[pipe_idx][step];
 	}
 }
 
-double DE_GET_NODE_RESULT_EPANET(const int prop_idx, const int branch_idx, const int node_idx, const int step_idx) {
+double DE_GET_NODE_RESULT_EPANET(const int prop_idx, const int branch_idx, const int node_idx, const int step) {
 	switch (prop_idx) {
-	case DE_QUAL_EPANET:       return net.DE_branches[branch_idx].terminal_C_EPANET[node_idx][step_idx];
-	case DE_DEMAND_EPANET:     return net.DE_branches[branch_idx].node_demand_EPANET[node_idx][step_idx];
+	case DE_QUAL_EPANET:       return net.DE_branches[branch_idx].terminal_C_EPANET[node_idx][step];
+	case DE_DEMAND_EPANET:     return net.DE_branches[branch_idx].node_demand_EPANET[node_idx][step];
 	}
 }
 
-double DE_GET_NODE_RESULT_WUDESIM(const int prop_idx, const int branch_idx, const int node_idx, const int step_idx) {
+double DE_GET_NODE_RESULT_WUDESIM(const int prop_idx, const int branch_idx, const int node_idx, const int step) {
 	switch (prop_idx) {
-	case DE_QUAL_WUDESIM: return net.DE_branches[branch_idx].terminal_C_WUDESIM_WRITE[node_idx][step_idx];
+	case DE_QUAL_WUDESIM: return net.DE_branches[branch_idx].terminal_C_WUDESIM_WRITE[node_idx][step];
 	}
 }
 
-double DE_GET_STOC_FLOW(const int prop_idx, const int branch_idx, const int pipe_idx, const int step_idx) {
+double DE_GET_STOC_FLOW(const int prop_idx, const int branch_idx, const int pipe_node_idx, const int step) {
 	switch (prop_idx) {
-	case DE_FLOW_STOCHASTIC:    return net.DE_branches[branch_idx].pipe_flow_STOC[pipe_idx][step_idx];
-	case DE_DEMAND_STOCHASTIC:  return net.DE_branches[branch_idx].node_demand_STOC[pipe_idx][step_idx];
+	case DE_FLOW_STOCHASTIC:    return net.DE_branches[branch_idx].pipe_flow_STOC[pipe_node_idx][step];
+	case DE_DEMAND_STOCHASTIC:  return net.DE_branches[branch_idx].node_demand_STOC[pipe_node_idx][step];
+	}
+}
+
+const char* DE_GET_ID(const int prop_idx, const int branch_idx, const int pipe_node_idx) {
+	switch (prop_idx) {
+	case DE_PIPE_ID: return net.DE_branches[branch_idx].pipe_id[pipe_node_idx].c_str();
+	case DE_NODE_ID: return net.DE_branches[branch_idx].terminal_id[pipe_node_idx].c_str();
+	case DE_BRAN_ID: return net.DE_branches[branch_idx].branch_id.c_str();
 	}
 }
 
@@ -421,7 +426,7 @@ double DE_GET_STOC_FLOW(const int prop_idx, const int branch_idx, const int pipe
 void WRITE_LOG_MSG(string output_msg) {
 
 	// open log file if it's not open
-	if (!DE_LOG_FILE.is_open()) { DE_LOG_FILE.open("WUDESIM_LOG.out", ios::out | ios::trunc); }
+	if (!DE_LOG_FILE.is_open()) { DE_LOG_FILE.open("WUDESIM.LOG", ios::out | ios::trunc); }
 
 	cout << output_msg << endl;
 	DE_LOG_FILE << output_msg << endl;

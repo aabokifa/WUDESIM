@@ -1,0 +1,49 @@
+[SOL_DISPERSION]
+;Choose how the laminar dispersion coefficient is calculated: 
+;(N: No dispersion / T: Taylor 1953 / L: Lee 2004)
+LAMINAR DISPERSION Taylor
+
+;Choose how the turbulent dispersion coefficient is calculated: 
+;(N: No dispersion / T: Taylor 1954 / S: Sattar 2014)
+TURBULENT DISPERSION Sattar
+
+[CORR_FACTS]
+;Choose how correction factors for the spatial distribution of flow demands are calculated: 
+;(N: No correction / D: Demand-based / S: Spacing-based ) 
+CORRECTION FACTORS No
+
+;Connection demand (same demand units as EPANET input file):
+CONN DEM 0.1
+
+;Segment length (same length units as EPANET input file):
+SEG LENGTH 50
+
+;Select which correction factors to use:
+;(Y:Yes / N:No)
+FLOW CORR Yes
+DISP CORR Yes
+RW CORR Yes
+
+[STOC_DEMANDS]
+;Use stochastically generated flow demands? 
+;(Y:Yes / N:No)
+STOCHASTIC DEMANDS Yes
+
+;mean pulse duration (sec):
+AVG DURATION	23.33
+;std deviation of pulse duration (sec):
+STD DURATION	3.222
+;mean pulse intensity (same demand units as EPANET input file):
+AVG INTENSITY	0.0765
+;std deviation of pulse lntensity (same demand units as EPANET input file):
+STD INTENSITY	2.054
+;Pulse averaging interval (sec):
+AVERAGING INTERVAL 600
+
+[WUDESIM_OUTPUT]
+;Choose whether or not to simulate all the dead-end branches in the netwrok
+SIM ALL No
+;Enter the IDs of the Dead-End branches you wish to simulate
+BRANCHES B5 B6
+
+[END]

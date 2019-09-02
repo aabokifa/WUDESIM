@@ -153,8 +153,8 @@ int RUN_WUDESIM_SIM(Network* net, vector<double> DE_branch_simulation)
 			// Flow velocity
 			for (int i = 0; i < N_steps_act; ++i) {
 
-				u[DeadEnd][i] = pipe_flow[DeadEnd][i] / Ap[DeadEnd];   //Actual Flow velocity(m / sec)
-				u_corr[DeadEnd][i] = u[DeadEnd][i] * Flow_Corr[DeadEnd];    //Corrected Flow velocity(m / sec)
+				u[DeadEnd][i]      = abs(pipe_flow[DeadEnd][i]) / Ap[DeadEnd];   // Actual Flow velocity(m / sec)
+				u_corr[DeadEnd][i] = u[DeadEnd][i] * Flow_Corr[DeadEnd];         // Corrected Flow velocity(m / sec)
 
 				// Calculate corrected Reynolds number and Residence time
 				net->DE_branches[branch].Reynolds_WUDESIM[DeadEnd][i] = u_corr[DeadEnd][i] * dp[DeadEnd] / viscosity;
@@ -162,7 +162,7 @@ int RUN_WUDESIM_SIM(Network* net, vector<double> DE_branch_simulation)
 					net->DE_branches[branch].Res_time_WUDESIM[DeadEnd][i] = Lt[DeadEnd] / u_corr[DeadEnd][i];
 				}
 
-				//Calculate Reynolds Number without correction
+				// Calculate Reynolds Number without correction
 				Re[DeadEnd][i] = u[DeadEnd][i] * dp[DeadEnd] / viscosity;
 			}
 
@@ -183,7 +183,7 @@ int RUN_WUDESIM_SIM(Network* net, vector<double> DE_branch_simulation)
 				if (Lt[DeadEnd] / u_corr[DeadEnd][i] > 3600. * 24. * 7.) { u_corr[DeadEnd][i] = 0; } //Consider stagnant if corrected residence time is more than 24 hrs
 			}
 
-			double u_max = abs(*max_element(u_corr[DeadEnd].begin(), u_corr[DeadEnd].end()));     //maximum flow velocity(m / sec)
+			double u_max = *max_element(u_corr[DeadEnd].begin(), u_corr[DeadEnd].end());     //maximum flow velocity(m / sec)
 			double dx_max = u_max * dt_q;              //maximum delta x(m)
 			double N_min = Lt[DeadEnd] / dx_max + 1;   //min number of discretization points
 
@@ -254,57 +254,67 @@ int RUN_WUDESIM_SIM(Network* net, vector<double> DE_branch_simulation)
 
 		C_bound_act = interpolation(Times_bound_in, C_bound_in, Times_bound_act);
 		
-		////////////////////////////////////////////CALCULATE DISPERSION COEFFICIENTS//////////////////////////////////////
+		////////////////////////////////////////////CALCULATE DISPERSION COEFFICIENTS//////////////////////////////////////	
 
-		if (net->DE_options.Dispersion_fl != 0) {
+		if (net->DE_options.LAM_Dispersion_fl != 0 || net->DE_options.TUR_Dispersion_fl != 0) {
 
 			for (int DeadEnd = (N_pipes - 1); DeadEnd >= 0; DeadEnd--) {
 
 				for (int Hstep = 0; Hstep < N_steps_act; ++Hstep) {
 
-					// Taylor dispersion for laminar regime
-					double E_taylor_lam = (pow(r0[DeadEnd] * u[DeadEnd][Hstep], 2) / (48. * D_diff));
+					// initialize the dispersion coefficients
+					double E_lam = 0;
+					double E_taylor_lam = 0;
+					double E_Lee_lam = 0;
 
-					// Taylor dispersion for turbulent regime
-					double aaa = 0.15 * pow(10, -3) / (3.7 * dp[DeadEnd]);
+					double E_tur = 0;
+					double E_taylor_tur = 0;
+					double E_sattar_tur = 0;
+
+					// Calculate Taylor's laminar dispersion
+					E_taylor_lam = (pow(r0[DeadEnd] * u[DeadEnd][Hstep], 2) / (48. * D_diff)) * Disp_Corr[DeadEnd];
+
+					if (net->DE_options.LAM_Dispersion_fl == 1) {						
+						// use Taylor dispersion for laminar flow
+						E_lam = E_taylor_lam;
+					}
+					else if (net->DE_options.LAM_Dispersion_fl == 2) {						
+						//use Lee 2004 average dispersion rates
+						double T0 = pow(r0[DeadEnd], 2.) / (16 * D_diff); // Eularian Time-scale
+						double T_res = Lt[DeadEnd] / u[DeadEnd][Hstep];   // Residence Time						
+						E_Lee_lam = E_taylor_lam * (1 - (T0 / T_res) * (1 - exp(-T_res / T0))) + D_diff;
+						E_lam = E_Lee_lam;
+					}
+
+					// Calculate pipe friction factor (swamee-jain)
+					double epsilon = 0.25 * pow(10, -3);
+					double aaa = (epsilon / dp[DeadEnd]) / 3.7;
 					double bbb = 5.74 / (pow(Re[DeadEnd][Hstep], 0.9));
-					double f = 0.25 / pow(log(aaa + bbb), 2); //Darcy friction factor (swamee-jain)
+					double f = 0.25 / pow(log(aaa + bbb), 2);
 
-					double E_taylor_tur = 10.1 * r0[DeadEnd] * abs(u[DeadEnd][Hstep]) * sqrt(f / 8);
-
-					// Sattar GEP-2 dispersion for transitional and turbulent regime
-					double E_sattar = 4110 * (2 * u[DeadEnd][Hstep] + 0.062) * dp[DeadEnd] / (Re[DeadEnd][Hstep]);
-
-
-					//Calculate the dispersion coefficient
-					if (Re[DeadEnd][Hstep] < 2300) {  //laminar flow
-
-						if (net->DE_options.Dispersion_fl == 1) { // use Taylor dispersion for laminar flow
-
-							E_disp[DeadEnd][Hstep] = E_taylor_lam * Disp_Corr[DeadEnd] + D_diff;
-
-						}
-
-						else if (net->DE_options.Dispersion_fl == 2) {   //use Lee 2004 average dispersion rates
-
-							double T0 = pow(r0[DeadEnd], 2.) / (16 * D_diff); //Eularian Time-scale
-							double T_res = Lt[DeadEnd] / u[DeadEnd][Hstep];   // Residence Time
-
-							E_disp[DeadEnd][Hstep] = E_taylor_lam * (1 - (T0 / T_res) * (1 - exp(-T_res / T0))) + D_diff;
-
-						}
+					if (net->DE_options.TUR_Dispersion_fl == 1) {
+						// use Taylor dispersion for turbulent flow
+						E_taylor_tur = 10.1 * r0[DeadEnd] * u[DeadEnd][Hstep] * sqrt(f / 8);
+						E_tur = E_taylor_tur;
+					}
+					else if (net->DE_options.TUR_Dispersion_fl == 2) {
+						//use Sattar 2014 dispersion
+						E_sattar_tur = 1.65*pow(dp[DeadEnd],-1.82* dp[DeadEnd])/(Re[DeadEnd][Hstep]*f);
+						E_tur = E_sattar_tur;
 					}
 
-					else if (Re[DeadEnd][Hstep] < 4000) {  //Transitional flow --> interpolate to get dispersion	coefficent						
-
-						E_disp[DeadEnd][Hstep] = E_taylor_lam + (E_sattar - E_taylor_lam) * ((Re[DeadEnd][Hstep] - 2300) / 1700) + D_diff;
-
+					// Store the dispersion coefficient
+					// Laminar dispersion
+					if (Re[DeadEnd][Hstep] < 2300) {
+						E_disp[DeadEnd][Hstep] = E_lam + D_diff;
 					}
-
-					else {
-
-						E_disp[DeadEnd][Hstep] = E_sattar + D_diff;
-
+					// Turbulent dispersion
+					else if (Re[DeadEnd][Hstep] > 4000) {
+						E_disp[DeadEnd][Hstep] = E_tur + D_diff;
+					}
+					// Transitional flow
+					else {  // interpolate to get dispersion coefficent
+						E_disp[DeadEnd][Hstep] = E_lam + (E_tur - E_lam) * ((Re[DeadEnd][Hstep] - 2300) / 1700) + D_diff;
 					}
 
 					// Calculate Peclet number
@@ -545,7 +555,7 @@ int RUN_WUDESIM_SIM(Network* net, vector<double> DE_branch_simulation)
 				/////////////////////////////////////////////DISPERSION STEP/////////////////////////////////////////
 				
 				// Check if dispersion is turned on
-				if (net->DE_options.Dispersion_fl != 0)
+				if (net->DE_options.LAM_Dispersion_fl != 0 || net->DE_options.TUR_Dispersion_fl != 0)
 				{
 					
 					/////////////////////////////////////////////Calculate Dispersion Matrices for all pipes/////////////////////////////////////////

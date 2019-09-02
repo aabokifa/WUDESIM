@@ -27,6 +27,7 @@ int CALC_CORR_FACT(Network* net) {
 
 	// Read correction factor parameters
 	int    Corr_Fact_fl = net->DE_options.Corr_Fact_fl;
+	int    calc_meth_fl = net->DE_options.calc_meth_fl;
 	double conn_demand  = net->DE_options.conn_demand;
 	double seg_spacing  = net->DE_options.seg_length;
 
@@ -69,21 +70,29 @@ int CALC_CORR_FACT(Network* net) {
 
 				// Apply the correction factors only if a significant drop in the flow takes place
 				if (Qout_avg <= conn_demand) {
+					
+					// Future development : Check whether exact or approximate correction factor are to be used
+					// Need to build separate functions for calculating dispersion coefficient, Kf, and Rw to apply the exact corrections
+					//if (calc_meth_fl == 0) {						
+					//}
+					//else if(calc_meth_fl == 1){
+					//}
 
 					Flow_Corr = 0.;
 					Disp_Corr = 0.;
-					Kw_Corr   = 0.;
+					Kw_Corr = 0.;
 
-					for (double i = 1; i <= N_seg_dum ; ++i) {
+					for (double i = 1; i <= N_seg_dum; ++i) {
 						Flow_Corr = Flow_Corr + pow(N_seg_dum - i + 1., -1.);
 						Disp_Corr = Disp_Corr + pow(N_seg_dum - i + 1., 2.);
-						Kw_Corr   = Kw_Corr   + pow(N_seg_dum - i + 1., -(2. / 3.));
+						Kw_Corr = Kw_Corr + pow(N_seg_dum - i + 1., -(2. / 3.));
 					}
 
 					N_seg_corr = N_seg_dum;
 					Flow_Corr = 1. / Flow_Corr;
 					Disp_Corr = Disp_Corr / (pow(N_seg_corr, 3.));
 					Kw_Corr = Kw_Corr * Flow_Corr;
+
 				}
 				else {
 					N_seg_corr = 1.;

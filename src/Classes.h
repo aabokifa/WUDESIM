@@ -100,9 +100,10 @@ public:
 	double conn_demand;
 	double seg_length;
 	
-	int flow_corr_fl; //0 = no correction; 1 = flow correction is implemented
-	int disp_corr_fl; //0 = no correction; 1 = flow correction is implemented
-	int Rw_corr_fl; //0 = no correction; 1 = flow correction is implemented
+	int flow_corr_fl;  //0 = no correction; 1 = flow correction is implemented
+	int disp_corr_fl;  //0 = no correction; 1 = flow correction is implemented
+	int Rw_corr_fl;    //0 = no correction; 1 = flow correction is implemented
+	int calc_meth_fl;  //0 = approximate; 1 = exact 
 
 	// stochastic demands
 	bool Stoc_dem_fl; //1=True, 0=False
@@ -114,7 +115,8 @@ public:
 	int N_steps_WUDESIM;
 
 	// Dispersive transport
-	int Dispersion_fl;
+	int LAM_Dispersion_fl;
+	int TUR_Dispersion_fl;
 
 	// Simulated branches
 	vector<double> simulated_branches;

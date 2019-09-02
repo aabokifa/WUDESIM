@@ -57,26 +57,45 @@ int OP_WUDESIM_INP(Network* net) {
 		string dummy;
 		char Dispersion_fl;
 
-		if (find_str("DISPERSION COEFF", dispersion_data[i])) {
+		if (find_str("LAMINAR DISPERSION", dispersion_data[i])) {
 
 			iss >> dummy >> dummy >> Dispersion_fl;			
-			
 
 			if (Dispersion_fl == 'N') {
-				WRITE_LOG_MSG("	o	Solute  dispersion turned OFF ");
-				net->DE_options.Dispersion_fl = 0;
+				WRITE_LOG_MSG("	o	Laminar  dispersion turned OFF ");
+				net->DE_options.LAM_Dispersion_fl = 0;
 			}
 			else if (Dispersion_fl == 'T') {
-				WRITE_LOG_MSG("	o	Solute  dispersion turned ON using Taylor's coefficients ");
-				net->DE_options.Dispersion_fl = 1;
+				WRITE_LOG_MSG("	o	Laminar  dispersion turned ON using Taylor's coefficients ");
+				net->DE_options.LAM_Dispersion_fl = 1;
 			}
-			else if (Dispersion_fl == 'A') {
-				WRITE_LOG_MSG("	o	Solute  dispersion turned ON using Lee 2004 average dispersion coefficients ");
-				net->DE_options.Dispersion_fl = 2;
-			}
-			
+			else if (Dispersion_fl == 'L') {
+				WRITE_LOG_MSG("	o	Laminar  dispersion turned ON using Lee 2004 average dispersion coefficients ");
+				net->DE_options.LAM_Dispersion_fl = 2;
+			}			
 			else {
-				WRITE_LOG_MSG("	o	DISPERSION COEFF flag not recognized ");  return 1;
+				WRITE_LOG_MSG("	o	LAMINAR DISPERSION flag not recognized ");  return 1;
+			}
+		}
+
+		if (find_str("TURBULENT DISPERSION", dispersion_data[i])) {
+
+			iss >> dummy >> dummy >> Dispersion_fl;
+
+			if (Dispersion_fl == 'N') {
+				WRITE_LOG_MSG("	o	Turbulent  dispersion turned OFF ");
+				net->DE_options.TUR_Dispersion_fl = 0;
+			}
+			else if (Dispersion_fl == 'T') {
+				WRITE_LOG_MSG("	o	Turbulent  dispersion turned ON using Taylor's coefficients ");
+				net->DE_options.TUR_Dispersion_fl = 1;
+			}
+			else if (Dispersion_fl == 'S') {
+				WRITE_LOG_MSG("	o	Turbulent  dispersion turned ON using Sattar 2014 coefficients ");
+				net->DE_options.TUR_Dispersion_fl = 2;
+			}
+			else {
+				WRITE_LOG_MSG("	o	TURBULENT DISPERSION flag not recognized ");  return 1;
 			}
 		}
 	}
@@ -93,9 +112,10 @@ int OP_WUDESIM_INP(Network* net) {
 	double conn_demand;
 	double seg_length;
 	
-	char flow_corr_fl = 'N';
-	char disp_corr_fl = 'N';
-	char Rw_corr_fl   = 'N';
+	char flow_corr_fl   = 'N';
+	char disp_corr_fl   = 'N';
+	char Rw_corr_fl     = 'N';
+	char calc_method_fl = 'A';
 
 	for (int i = 0; i < Corr_fact_data.size(); i++) {
 
@@ -106,7 +126,7 @@ int OP_WUDESIM_INP(Network* net) {
 
 			iss >> dummy >> dummy >> Corr_fact_fl;
 
-			if (Corr_fact_fl=='F') {       //Flow-based correction
+			if (Corr_fact_fl=='D') {        //demand-based correction
 				net->DE_options.Corr_Fact_fl = 1;
 			}
 			else if (Corr_fact_fl == 'S') { //Spacing-based correction
@@ -120,22 +140,33 @@ int OP_WUDESIM_INP(Network* net) {
 				WRITE_LOG_MSG("	o	CORRECTION FACTORS flag not recognized ");  return 1;
 			}
 		}
-		if (find_str("CONN DEM", Corr_fact_data[i])   && Corr_fact_fl == 'F') { iss >> dummy >> dummy >> conn_demand; }
-		if (find_str("SEG LENGTH", Corr_fact_data[i]) && Corr_fact_fl == 'S') { iss >> dummy >> dummy >> seg_length; }
-		
-		if (find_str("FLOW CORR", Corr_fact_data[i])) {
-			iss >> dummy >> dummy >> flow_corr_fl; if (flow_corr_fl == 'Y') { net->DE_options.flow_corr_fl = 1; }
-		}
-		if (find_str("DISP CORR", Corr_fact_data[i])) {
-			iss >> dummy >> dummy >> disp_corr_fl; if (disp_corr_fl == 'Y') { net->DE_options.disp_corr_fl = 1; }
-		}
-		if (find_str("Rw CORR", Corr_fact_data[i])) {
-			iss >> dummy >> dummy >> Rw_corr_fl; if (Rw_corr_fl == 'Y') { net->DE_options.Rw_corr_fl = 1; }
+
+		if (Corr_fact_fl != 'N') {
+
+			if (find_str("CONN DEM", Corr_fact_data[i]) && Corr_fact_fl == 'D') { iss >> dummy >> dummy >> conn_demand; }
+			
+			if (find_str("SEG LENGTH", Corr_fact_data[i]) && Corr_fact_fl == 'S') { iss >> dummy >> dummy >> seg_length; }
+
+			if (find_str("FLOW CORR", Corr_fact_data[i])) {	iss >> dummy >> dummy >> flow_corr_fl; 
+				if (flow_corr_fl == 'Y') { net->DE_options.flow_corr_fl = 1; }
+			}
+			if (find_str("DISP CORR", Corr_fact_data[i])) {	iss >> dummy >> dummy >> disp_corr_fl; 
+				if (disp_corr_fl == 'Y') { net->DE_options.disp_corr_fl = 1; }
+			}
+			if (find_str("RW CORR", Corr_fact_data[i])) { iss >> dummy >> dummy >> Rw_corr_fl; 
+				if (Rw_corr_fl == 'Y') { net->DE_options.Rw_corr_fl = 1; }
+			}
+			
+			// Future development : Check whether exact or approximate correction factor are to be used
+			// Need to Add a CALC METHOD Tag to the input file
+			if (find_str("CALC METHOD", Corr_fact_data[i])) { iss >> dummy >> dummy >> calc_method_fl; 
+				if (calc_method_fl == 'E') { net->DE_options.calc_meth_fl = 1; } 
+			}
 		}
 
 	}
 
-	if (Corr_fact_fl == 'F') {
+	if (Corr_fact_fl == 'D') {
 		// display output
 		WRITE_LOG_MSG("	o	Correction factors turned ON with a connection demand of " + toString(conn_demand) + " " + toString(net->options.Flow_UNITS));
 
@@ -191,11 +222,11 @@ int OP_WUDESIM_INP(Network* net) {
 		}
 
 		// Read stochastic demands parameters
-		if (find_str("u1", Stoc_dem_data[i])) { iss >> dummy >> net->DE_options.u1; }
-		if (find_str("u2", Stoc_dem_data[i])) { iss >> dummy >> net->DE_options.u2; }
-		if (find_str("s1", Stoc_dem_data[i])) { iss >> dummy >> net->DE_options.s1; }
-		if (find_str("s2", Stoc_dem_data[i])) { iss >> dummy >> net->DE_options.s2; }
-		if (find_str("AVERAGING INTERVAL", Stoc_dem_data[i])) { iss >> dummy >> dummy >> net->DE_options.avg_int; }
+		if (find_str("AVG DURATION", Stoc_dem_data[i])) { iss >> dummy >> dummy >> net->DE_options.u1;}
+		if (find_str("AVG INTENSITY", Stoc_dem_data[i])) { iss >> dummy >> dummy >> net->DE_options.u2;}
+		if (find_str("STD DURATION", Stoc_dem_data[i])) { iss >> dummy >> dummy >> net->DE_options.s1;}
+		if (find_str("STD INTENSITY", Stoc_dem_data[i])) { iss >> dummy >> dummy >> net->DE_options.s2;}
+		if (find_str("AVERAGING INTERVAL", Stoc_dem_data[i])) { iss >> dummy >> dummy >> net->DE_options.avg_int;}
 
 	}
 	
@@ -245,7 +276,7 @@ int OP_WUDESIM_INP(Network* net) {
 		}		
 
 		// Read the IDs of the branches selected for simulation
-		if (find_str("Branches", WUDESIM_rpt_data[i]) && WUDESIM_rpt_fl == 'N') {
+		if (find_str("BRANCHES", WUDESIM_rpt_data[i]) && WUDESIM_rpt_fl == 'N') {
 
 			iss >> dummy;
 

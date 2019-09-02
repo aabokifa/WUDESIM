@@ -32,11 +32,11 @@ int GEN_STOC_DEM(Network* net, vector<double> DE_branch_simulation)
 	double dt_h_EPANET = net->times.Hyd_step_hr * 3600. + net->times.Hyd_step_min * 60.;   //EPANET Hydraulic time step (sec)
 	
 	// Stochastic pulse variables
-	double u1      = net->DE_options.u1;	  //mean pulse duration[ln(s)]
-	double s1      = net->DE_options.s1;	  //stdev pulse duration[ln(s)]
-	double u2      = net->DE_options.u2;	  //mean pulse intensity[ln(L / s)]
-	double s2      = net->DE_options.s2;	  //stdev pulse instenisty[ln(L / s)]
-	double mean_V  = exp(u1 + u2) / 1000;	  //Mean pulse volume(m3)
+	double u1      = log(net->DE_options.u1);	                                  //mean pulse duration[ln(s)]
+	double s1      = log(net->DE_options.s1);	                                  //stdev pulse duration[ln(s)]
+	double u2      = log(net->DE_options.u2 *= net->options.Flow_unit_conv);	  //mean pulse intensity[ln(m3 / s)]
+	double s2      = log(net->DE_options.s2 *= net->options.Flow_unit_conv);	  //stdev pulse instenisty[ln(m3 / s)]
+	double mean_V  = exp(u1 + u2);	                                              //Mean pulse volume(m3)
 
 	// Calculate new flow profile parameters
 	double dt_h_WUDESIM             = net->DE_options.avg_int;		// Averaging interval (sec)
@@ -107,7 +107,7 @@ int GEN_STOC_DEM(Network* net, vector<double> DE_branch_simulation)
 				for (int pulse = 0; pulse < N_pulses[step]; pulse++) {
 					vol_sum += (D[step][pulse] * I[step][pulse]);
 				}
-				corr[step] = (vol_sum / 1000) / (demand_EPANET[step] * dt_h_EPANET);
+				corr[step] = (vol_sum) / (demand_EPANET[step] * dt_h_EPANET);
 				for (int pulse = 0; pulse < N_pulses[step]; pulse++) { I[step][pulse] /= corr[step]; }
 			}
 
@@ -155,7 +155,7 @@ int GEN_STOC_DEM(Network* net, vector<double> DE_branch_simulation)
 			for (int step = 0; step < N_steps_EPANET; step++) {
 				for (int interv = 0; interv < N_avg_int; interv++) {
 					for (int i = T; i < T + dt_h_WUDESIM; i++) { demand_WUDESIM[K] += Q[i]; }
-					demand_WUDESIM[K] /= (dt_h_WUDESIM * 1000);
+					demand_WUDESIM[K] /= (dt_h_WUDESIM);
 					T += dt_h_WUDESIM;
 					K++;
 				}

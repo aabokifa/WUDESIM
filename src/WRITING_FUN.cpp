@@ -43,7 +43,13 @@ void write_DE_ids(Network* net)
 {
 	ofstream DE_IDS_FILE;
 
-	if (!DE_IDS_FILE.is_open()) { DE_IDS_FILE.open("DE_Pipe_ID.out", ios::out | ios::trunc); }
+	if (!DE_IDS_FILE.is_open()) { DE_IDS_FILE.open("DEB_ID.OUT", ios::out | ios::trunc); }
+
+	DE_IDS_FILE << "*********************************************************************************************" << endl;
+	DE_IDS_FILE << "*                                                                                           *" << endl;
+	DE_IDS_FILE << "*                              IDs of Dead End Branch Pipes                                 *" << endl;
+	DE_IDS_FILE << "*                                                                                           *" << endl;
+	DE_IDS_FILE << "*********************************************************************************************" << endl << endl;
 
 	printElement("Branch_ID", DE_IDS_FILE);
 	printElement("Branch_Size", DE_IDS_FILE);
@@ -63,6 +69,9 @@ void write_DE_ids(Network* net)
 		DE_IDS_FILE << endl;
 
 	}
+
+	DE_IDS_FILE << "*********************************************************************************************" << endl << endl;
+
 	DE_IDS_FILE.close();
 
 }
@@ -79,7 +88,14 @@ void write_DE_Properties(Network* net) {
 
 	ofstream DE_PROPERTIES_FILE;
 
-	if (!DE_PROPERTIES_FILE.is_open()) { DE_PROPERTIES_FILE.open("DE_Properties_EPANET.out", ios::out | ios::trunc); }
+	if (!DE_PROPERTIES_FILE.is_open()) { DE_PROPERTIES_FILE.open("DEB_PROP.OUT", ios::out | ios::trunc); }
+
+	DE_PROPERTIES_FILE << "*********************************************************************************************" << endl;
+	DE_PROPERTIES_FILE << "*                                                                                           *" << endl;
+	DE_PROPERTIES_FILE << "*                            Properties of Dead End Branches                                *" << endl;
+	DE_PROPERTIES_FILE << "*                                 from EPANET Simulation                                    *" << endl;
+	DE_PROPERTIES_FILE << "*                                                                                           *" << endl;
+	DE_PROPERTIES_FILE << "*********************************************************************************************" << endl << endl;
 
 	printElement("Branch_ID", DE_PROPERTIES_FILE);
 	printElement("Pipe_ID", DE_PROPERTIES_FILE);
@@ -111,6 +127,8 @@ void write_DE_Properties(Network* net) {
 		}
 	}
 
+	DE_PROPERTIES_FILE << "*********************************************************************************************" << endl << endl;
+
 	DE_PROPERTIES_FILE.close();
 }
 
@@ -121,7 +139,13 @@ void write_stoc_dems(Network* net)
 {
 	ofstream DE_STOC_DEM_FILE;
 
-	if (!DE_STOC_DEM_FILE.is_open()) { DE_STOC_DEM_FILE.open("DE_Stochastic_Flow.out", ios::out | ios::trunc);}
+	if (!DE_STOC_DEM_FILE.is_open()) { DE_STOC_DEM_FILE.open("DEB_STOC_FL.OUT", ios::out | ios::trunc);}
+
+	DE_STOC_DEM_FILE << "*********************************************************************************************" << endl;
+	DE_STOC_DEM_FILE << "*                                                                                           *" << endl;
+	DE_STOC_DEM_FILE << "*                             Stochastically Generated Flows                                *" << endl;
+	DE_STOC_DEM_FILE << "*                                                                                           *" << endl;
+	DE_STOC_DEM_FILE << "*********************************************************************************************" << endl << endl;
 
 	// Find which branches will be simulated
 	vector<double> DE_branch_simulation = net->DE_options.simulated_branches;
@@ -146,6 +170,8 @@ void write_stoc_dems(Network* net)
 			DE_STOC_DEM_FILE << endl;
 		}
 	}
+
+	DE_STOC_DEM_FILE << "*********************************************************************************************" << endl << endl;
 
 	DE_STOC_DEM_FILE.close();
 }

@@ -1,0 +1,36 @@
+****************	FULL WUDESIM Simulation Started!	****************
+
+o	Processing EPANET input file  ...
+o	Processing EPANET input file was successful!
+
+o	Finding dead-end branches ...
+o	Found 1 dead-end branches in the network
+o	IDs of Dead End Pipes were written to DE_Pipe_ID.out
+
+o	Running EPANET simulation...
+o	Running EPANET was successful!
+
+o	Writing EPANET Report file ...
+o	EPANET Report file was written successfully!
+
+o	Evaluating properties of dead-end pipes ...
+o	Evaluating properties of dead-end pipes was successful!
+o	Properties of Dead End Pipes were written to DE_Properties.out
+
+o	Processing WUDESIM input file ...
+	o	Laminar  dispersion turned ON using Taylor's coefficients 
+	o	Turbulent  dispersion turned ON using Sattar 2014 coefficients 
+	o	Correction factors turned ON with a segment spacing of 200 ft
+	o	Stochastic demands turned OFF 
+o	Processing WUDESIM input file was successful!
+
+o	Starting WUDESIM water quality simulations!
+	o	Simulating Dead-End Branch B1
+o	WUDESIM simulations were successful!
+
+o	Writing WUDESIM Report file ...
+o	WUDESIM Report file was written successfully!
+
+*****************************************************************************
+WUDESIM finished successfuly!
+WUDESIM execution time: 482 ms

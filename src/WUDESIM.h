@@ -40,63 +40,67 @@ C_DLLEXPORT int DE_WRITE_EPANET_REPORT();
 
 // WUDESIM Get functions
 
-C_DLLEXPORT int DE_GET_COUNT(const int);                                           // property idx
-C_DLLEXPORT int DE_GET_BRAN_PROPERTY(const int, const int);                        // property idx, branch idx
-C_DLLEXPORT double DE_GET_PIPE_PROPERTY(const int, const int, const int);          // property idx, branch idx, pipe idx
-C_DLLEXPORT double DE_GET_PIPE_RESULT_EPANET(const int, const int, const int, const int); // property idx, branch idx, pipe idx, step idx
-C_DLLEXPORT double DE_GET_PIPE_RESULT_WUDESIM(const int, const int, const int, const int); // property idx, branch idx, pipe idx, step idx
-C_DLLEXPORT double DE_GET_NODE_RESULT_EPANET(const int, const int, const int, const int); // property idx, branch idx, node idx, step idx
-C_DLLEXPORT double DE_GET_NODE_RESULT_WUDESIM(const int, const int, const int, const int); // property idx, branch idx, node idx, step idx
-C_DLLEXPORT double DE_GET_STOC_FLOW(const int, const int, const int, const int);   // property idx, branch idx, pipe idx, step idx
-C_DLLEXPORT const char* DE_GET_ID(const int, const int, const int);                // property idx, branch idx, pipe/node idx
+C_DLLEXPORT int    DE_GET_BRAN_COUNT(const int);                                           // property idx
+C_DLLEXPORT int    DE_GET_STEP_COUNT(const int);                                           // property idx
+C_DLLEXPORT int    DE_GET_BRAN_SIZE(const int, const int);                                 // property idx, branch idx
+C_DLLEXPORT double DE_GET_PIPE_PROPERTY(const int, const int, const int);                  // property idx, branch idx, pipe idx
+C_DLLEXPORT double DE_GET_PIPE_RESULT_EPANET(const int, const int, const int, const int);  // property idx, branch idx, pipe idx, step
+C_DLLEXPORT double DE_GET_PIPE_RESULT_WUDESIM(const int, const int, const int, const int); // property idx, branch idx, pipe idx, step
+C_DLLEXPORT double DE_GET_NODE_RESULT_EPANET(const int, const int, const int, const int);  // property idx, branch idx, node idx, step
+C_DLLEXPORT double DE_GET_NODE_RESULT_WUDESIM(const int, const int, const int, const int); // property idx, branch idx, node idx, step
+C_DLLEXPORT double DE_GET_STOC_FLOW(const int, const int, const int, const int);           // property idx, branch idx, pipe idx, step
+C_DLLEXPORT const char* DE_GET_ID(const int, const int, const int);                        // property idx, branch idx, pipe/node idx
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Define the toolkit options
 
-enum COUNT_OPT {
+enum DE_GET_BRAN_COUNT_OPT {
 	DE_BRAN_COUNT,            // = 0
-	DE_EPANET_STEP_COUNT,     // = 1
-	DE_STOCHASTIC_STEP_COUNT, // = 2
 };
 
-enum BRAN_VALUE_OPT {
+enum DE_GET_STEP_COUNT_OPT {
+	DE_EPANET_STEP_COUNT,     // = 0
+	DE_STOCHASTIC_STEP_COUNT, // = 1
+};
+
+enum DE_GET_BRAN_SIZE_OPT {
 	DE_BRAN_SIZE, // = 0
 }; 
 
-enum ID_OPT {
+enum DE_GET_ID_OPT {
 	DE_PIPE_ID, // = 0
 	DE_NODE_ID, // = 1
 	DE_BRAN_ID, // = 2
 };
 
-enum PIPE_PROPERTY_OPT {
+enum DE_GET_PIPE_PROPERTY_OPT {
 	DE_LENGTH,           // = 0
 	DE_DIAMETER,         // = 1
 };
 
-enum PIPE_RESULT_EPANET_OPT {
+enum DE_GET_PIPE_RESULT_EPANET_OPT {
 	DE_REYNOLDS_EPANET,     // = 0
 	DE_RES_TIME_EPANET,     // = 1
 	DE_FLOW_EPANET,         // = 2
 };
 
-enum NODE_RESULT_EPANET_OPT {
+enum DE_GET_NODE_RESULT_EPANET_OPT {
 	DE_QUAL_EPANET,      // = 0
 	DE_DEMAND_EPANET, // = 1
 };
 
-enum PIPE_RESULT_WUDESIM_OPT {
+enum DE_GET_PIPE_RESULT_WUDESIM_OPT {
 	DE_REYNOLDS_WUDESIM,     // = 0
 	DE_RES_TIME_WUDESIM,     // = 1
 	DE_PECLET_WUDESIM,       // = 2
 };
 
-enum NODE_RESULT_WUDESIM_OPT {
+enum DE_GET_NODE_RESULT_WUDESIM_OPT {
 	DE_QUAL_WUDESIM,       // = 0
 };
 
-enum STOC_FLOW_OPT {
+enum DE_GET_STOC_FLOW_OPT {
 	DE_FLOW_STOCHASTIC,   // = 0
 	DE_DEMAND_STOCHASTIC, // = 1
 };
