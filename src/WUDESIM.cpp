@@ -283,7 +283,7 @@ int DE_WRITE_DEADEND_IDS() {
 	// Check whether dead-ends were discovered
 	if (!FIND_DEADENDS_fl) { error = DE_ENGINE_FIND_DEADENDS(); if (error) { return 1; } }
 	write_DE_ids(&net);
-	WRITE_LOG_MSG("o	IDs of Dead End Pipes were written to DE_Pipe_ID.out");
+	WRITE_LOG_MSG("o	IDs of Dead End Pipes were written to DEB_ID.OUT");
 	return 0;
 }
 
@@ -294,7 +294,7 @@ int DE_WRITE_DEADEND_PROPERTIES() {
 	// Check whether Dead end properties were calculated
 	if (!CALC_DEADEND_PROPERTIES_fl) { error = DE_ENGINE_CALC_DEADEND_PROPERTIES_EPANET(); if (error) { return 1; } }
 	write_DE_Properties(&net);
-	WRITE_LOG_MSG("o	Properties of Dead End Pipes were written to DE_Properties.out");
+	WRITE_LOG_MSG("o	Properties of Dead End Pipes were written to DEB_PROP.OUT");
 	return 0;
 }
 
@@ -308,7 +308,7 @@ int DE_WRITE_STOCHASTIC_DEMANDS() {
 			error = DE_ENGINE_GENERATE_STOC_DEMAND(); if (error) { return 1; }
 		}
 		write_stoc_dems(&net);
-		WRITE_LOG_MSG("o	Stochastic flows were written to DE_Stochastic_Flow.out");
+		WRITE_LOG_MSG("o	Stochastic flows were written to DEB_STOC_FL.OUT");
 	}
 	return 0;
 }

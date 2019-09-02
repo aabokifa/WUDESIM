@@ -4,7 +4,7 @@ o	Processing EPANET input file was successful!
 
 o	Finding dead-end branches ...
 o	Found 70 dead-end branches in the network
-o	IDs of Dead End Pipes were written to DE_Pipe_ID.out
+o	IDs of Dead End Pipes were written to DEB_ID.OUT
 
 o	Running EPANET simulation...
 o	Running EPANET was successful!
@@ -14,7 +14,7 @@ o	Evaluating properties of dead-end pipes was successful!
 
 o	Writing EPANET Report file ...
 o	EPANET Report file was written successfully!
-o	Properties of Dead End Pipes were written to DE_Properties.out
+o	Properties of Dead End Pipes were written to DEB_PROP.OUT
 
 o	Processing WUDESIM input file ...
 	o	Laminar  dispersion turned ON using Taylor's coefficients 
