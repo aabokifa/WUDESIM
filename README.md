@@ -4,11 +4,11 @@ A public-domain software package for simulating water quality in the dead-end br
 
 - The compiled Windows executable and DLL toolkit can be found in the \bin folder. The executable can be run directly from the command line and takes four command line arguments:
  
-> WUDESIM.exe EPANET.inp EPANET.rpt WUDESIM.inp WUDESIM.rpt
+> WUDESIM.exe EPANET.INP EPANET.RPT WUDESIM.INP WUDESIM.RPT
 
 - EPANET.INP  ... Name of the EPANET input file
 - EPANET.RPT  ... Desired name for the EPANET report file
-- WUDESIM.INP ... Name of the corresponding WUDESIM input file
+- WUDESIM.INP ... Name of the WUDESIM input file
 - WUDESIM.RPT ... Desired name for the WUDESIM report file
 
 Examples on how the users can employ the executable as well as the different toolkit functions to run water quality analysis and obtain simulation results are provided in the \test folder
