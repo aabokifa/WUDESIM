@@ -1,17 +1,14 @@
 # WUDESIM
-A special water quality simulation model for the dead-end branches of drinking water distribution systems. This module is a C++ application that incorporates EPANET programmer's toolkit and solves the advection-dispersion-reaction (ADR) equation for solute transport in the links of the dead-end branches. The model generates a separate report (.rpt) file.  
 
-- For more information:
-> Abokifa, A. A., Yang, Y. J., Lo, C. S., & Biswas, P. (2016). Water quality modeling in the dead end sections of drinking water distribution networks. Water research, 89, 107-117.
+A public-domain software package for simulating water quality in the dead-end branches of drinking water distribution networks. The C/C++ source code incorporates EPANET programmers' toolkit, and solves the advection-dispersion-reaction (ADR) equation for solute transport in the pipes of the dead-end branches. The software generates a separate report (.RPT) file together with a series of output (.OUT) files. 
 
-
-- The compiled executable can be found in the \bin folder. The executable can be run directly from the command line. It takes four command line arguments:
+- The compiled Windows executable and DLL toolkit can be found in the \bin folder. The executable can be run directly from the command line and takes four command line arguments:
  
 > WUDESIM.exe EPANET.inp EPANET.rpt WUDESIM.inp WUDESIM.rpt
 
-- EPANET.inp  ... Name of the EPANET input file
-- EPANET.rpt  ... Desired name for the EPANET report file
-- WUDESIM.inp ... Name of the corresponding WUDESIM input file
-- WUDESIM.rpt ... Desired name for the WUDESIM report file
+- EPANET.INP  ... Name of the EPANET input file
+- EPANET.RPT  ... Desired name for the EPANET report file
+- WUDESIM.INP ... Name of the corresponding WUDESIM input file
+- WUDESIM.RPT ... Desired name for the WUDESIM report file
 
-An example of the four files can be found in the \test folder
+Examples on how the users can employ the executable as well as the different toolkit functions to run water quality analysis and obtain simulation results are provided in the \test folder
